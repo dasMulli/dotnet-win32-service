@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CSS.ServiceHost
+namespace CSS.Win32Service
 {
     [Flags]
     public enum ServiceControlAccessRights : uint

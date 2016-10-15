@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CSS.ServiceHost
+namespace CSS.Win32Service
 {
     internal delegate void ServiceMainFunction(uint numArs, IntPtr firstArg);
 }

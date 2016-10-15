@@ -1,4 +1,4 @@
-﻿namespace CSS.ServiceHost
+﻿namespace CSS.Win32Service
 {
     public interface IWin32Service
     {

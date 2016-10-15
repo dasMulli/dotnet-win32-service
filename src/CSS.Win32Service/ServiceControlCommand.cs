@@ -1,5 +1,8 @@
-﻿namespace CSS.ServiceHost
+﻿using JetBrains.Annotations;
+
+namespace CSS.Win32Service
 {
+    [PublicAPI]
     public enum ServiceControlCommand : uint
     {
         Stop = 0x00000001,

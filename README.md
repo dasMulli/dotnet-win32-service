@@ -25,10 +25,11 @@ Prerequisites:
 ...
 Sucessfully registered and started service "Demo ASP.NET Core on .NET Core Service"
 ```
-Open http://localhost:5080 in a browser. You should see `Hello world`.
+Open `http://localhost:5080` in a browser. You should see `Hello world`.
 
 The "Services" administrative tool should show the service:
 ![running service](./img/running-service.png)
+![running service](./img/running-service-taskmgr.png)
 
 ```cmd
 > dotnet run --unregister-service
@@ -72,7 +73,8 @@ class TestWin32Service : IWin32Service
 The following szenarios are missing:
 * Proper handling of errors.
   * Basically, everything will throw a `Win32Exception` if something goes wrong.
-  * When the `IService` implementation throws, things will go wrong.
+  * All service implementation exceptions will report exit code -1 / 0xffffffff to the service control manager.
 * Unit tests.
 * Setting / updating the description field.
 * Support for services supporting pause and continue commands as well as other commands (power event, system shutdown)
+  * Partially addressed. Consumers can now implement `IWin32ServiceStateMachine` to implement custom behavior.

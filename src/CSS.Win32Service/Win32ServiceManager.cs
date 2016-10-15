@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CSS.ServiceHost
+namespace CSS.Win32Service
 {
     public sealed class Win32ServiceManager
     {

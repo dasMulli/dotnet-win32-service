@@ -1,16 +1,21 @@
 {
-  "version": "1.0.0-*",
-  "buildOptions": {
-    "debugType": "portable",
-    "emitEntryPoint": false,
-    "allowUnsafe": true
-  },
-  "dependencies": {},
-  "frameworks": {
-    "netstandard1.3": {
-      "dependencies": {
-        "NETStandard.Library": "1.6.0"
-      }
+    "version": "1.0.0-*",
+    "buildOptions": {
+        "debugType": "portable",
+        "emitEntryPoint": false,
+        "allowUnsafe": true
+    },
+    "dependencies": {
+        "JetBrains.Annotations": {
+            "version": "10.2.1",
+            "type": "build"
+        }
+    },
+    "frameworks": {
+        "netstandard1.3": {
+            "dependencies": {
+                "NETStandard.Library": "1.6.0"
+            }
+        }
     }
-  }
 }

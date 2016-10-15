@@ -1,16 +1,18 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using JetBrains.Annotations;
 
-namespace CSS.ServiceHost
+namespace CSS.Win32Service
 {
     [StructLayout(LayoutKind.Sequential)]
-    [SuppressMessage("ReSharper", "ConvertToAutoProperty")]
+    [SuppressMessage("ReSharper", "ConvertToAutoProperty", Justification = "Keep fields to preserve explicit struct layout for marshalling.")]
+    [PublicAPI]
     public struct ServiceStatus
     {
         private ServiceType serviceType;
         private ServiceState state;
         private ServiceAcceptedControlCommandsFlags acceptedControlCommands;
-        private uint win32ExitCode;
+        private int win32ExitCode;
         private uint serviceSpecificExitCode;
         private uint checkPoint;
         private uint waitHint;
@@ -33,7 +35,7 @@ namespace CSS.ServiceHost
             set { acceptedControlCommands = value; }
         }
 
-        public uint Win32ExitCode
+        public int Win32ExitCode
         {
             get { return win32ExitCode; }
             set { win32ExitCode = value; }
@@ -57,7 +59,7 @@ namespace CSS.ServiceHost
             set { waitHint = value; }
         }
 
-        public ServiceStatus(ServiceType serviceType, ServiceState state, ServiceAcceptedControlCommandsFlags acceptedControlCommands, uint win32ExitCode, uint serviceSpecificExitCode, uint checkPoint, uint waitHint)
+        public ServiceStatus(ServiceType serviceType, ServiceState state, ServiceAcceptedControlCommandsFlags acceptedControlCommands, int win32ExitCode, uint serviceSpecificExitCode, uint checkPoint, uint waitHint)
         {
             this.serviceType = serviceType;
             this.state = state;

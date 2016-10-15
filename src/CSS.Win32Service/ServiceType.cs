@@ -1,5 +1,9 @@
-﻿namespace CSS.ServiceHost
+﻿using JetBrains.Annotations;
+
+namespace CSS.Win32Service
 {
+    // TODO: decide if this shall be exposed
+    [PublicAPI]
     public enum ServiceType : uint
     {
         FileSystemDriver = 0x00000002,

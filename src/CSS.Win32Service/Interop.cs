@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace CSS.ServiceHost
+namespace CSS.Win32Service
 {
     internal static class Interop
     {
+        // ReSharper disable once InconsistentNaming
         private const string DllServiceCore_L1_1_0 = "api-ms-win-service-core-l1-1-0.dll";
+        // ReSharper disable once InconsistentNaming
         private const string DllServiceManagement_L1_1_0 = "api-ms-win-service-management-l1-1-0.dll";
 
         [DllImport(DllServiceManagement_L1_1_0, ExactSpelling = true, SetLastError = true)]

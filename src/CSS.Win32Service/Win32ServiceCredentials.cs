@@ -1,7 +1,9 @@
 ﻿using System;
+using JetBrains.Annotations;
 
-namespace CSS.ServiceHost
+namespace CSS.Win32Service
 {
+    [PublicAPI]
     public struct Win32ServiceCredentials : IEquatable<Win32ServiceCredentials>
     {
         public string UserName { get; }
@@ -14,11 +16,11 @@ namespace CSS.ServiceHost
             Password = password;
         }
 
-        public static Win32ServiceCredentials LocalSystem = new Win32ServiceCredentials(null, null);
+        public static Win32ServiceCredentials LocalSystem = new Win32ServiceCredentials(userName: null, password: null);
 
-        public static Win32ServiceCredentials LocalService = new Win32ServiceCredentials(@"NT AUTHORITY\LocalService", null);
+        public static Win32ServiceCredentials LocalService = new Win32ServiceCredentials(@"NT AUTHORITY\LocalService", password: null);
 
-        public static Win32ServiceCredentials NetworkService = new Win32ServiceCredentials(@"NT AUTHORITY\NetworkService", null);
+        public static Win32ServiceCredentials NetworkService = new Win32ServiceCredentials(@"NT AUTHORITY\NetworkService", password: null);
         
         public bool Equals(Win32ServiceCredentials other)
         {
@@ -27,7 +29,7 @@ namespace CSS.ServiceHost
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
+            if (ReferenceEquals(objA: null, objB: obj))
             {
                 return false;
             }

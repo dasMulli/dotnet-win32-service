@@ -4,17 +4,18 @@
         "debugType": "portable",
         "emitEntryPoint": true
     },
-    "dependencies": {},
+    "dependencies": {
+        "CSS.Win32Service": "1.0.0-*",
+        "Microsoft.AspNetCore.Server.Kestrel": "1.0.1-*",
+        "Microsoft.Extensions.Configuration.CommandLine": "1.0.0"
+    },
     "frameworks": {
         "netcoreapp1.0": {
             "dependencies": {
                 "Microsoft.NETCore.App": {
                     "type": "platform",
                     "version": "1.0.1"
-                },
-                "CSS.Win32Service": "1.0.0-*",
-                "Microsoft.AspNetCore.Server.Kestrel": "1.0.1-*",
-                "Microsoft.Extensions.Configuration.CommandLine": "1.0.0"
+                }
             }
         }
     }

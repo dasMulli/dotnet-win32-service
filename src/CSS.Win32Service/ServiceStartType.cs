@@ -1,5 +1,9 @@
-﻿namespace CSS.ServiceHost
+﻿using JetBrains.Annotations;
+
+namespace CSS.Win32Service
 {
+    // TODO: really expose? only a bool flag for autostart is currently exposed through Win32ServiceManager
+    [PublicAPI]
     public enum ServiceStartType : uint
     {
         StartOnBoot = 0,

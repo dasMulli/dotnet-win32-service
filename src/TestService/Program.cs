@@ -2,9 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
-using CSS.ServiceHost;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+using CSS.Win32Service;
 
 namespace TestService
 {
@@ -40,7 +38,7 @@ namespace TestService
 
                     // Do not use LocalSystem in production.. but this is good for demos as LocalSystem will have access to some random git-clone path
                     new Win32ServiceManager()
-                        .CreateService(ServiceName, ServiceDescription, fullServiceCommand, Win32ServiceCredentials.LocalSystem, autoStart: true, startImmediately: true);
+                        .CreateService(ServiceName, ServiceDescription, fullServiceCommand, Win32ServiceCredentials.LocalSystem, autoStart: true, startImmediately: true, errorSeverity: ErrorSeverity.Normal);
 
                     Console.WriteLine($@"Sucessfully registered and started service ""{ServiceDescription}""");
                 }
@@ -82,39 +80,6 @@ namespace TestService
             arg = Regex.Replace(arg, @"(\\*)" + "\"", @"$1$1\" + "\"");
             arg = "\"" + Regex.Replace(arg, @"(\\+)$", @"$1$1") + "\"";
             return arg;
-        }
-    }
-
-    internal class TestWin32Service : IWin32Service
-    {
-        private readonly string[] commandLineArguments;
-        private IWebHost webHost;
-
-        public TestWin32Service(string[] commandLineArguments)
-        {
-            this.commandLineArguments = commandLineArguments;
-        }
-
-        public string ServiceName => "Test Service";
-
-        public void Start()
-        {
-            var config = new ConfigurationBuilder()
-                .AddCommandLine(commandLineArguments)
-                .Build();
-
-            webHost = new WebHostBuilder()
-                .UseKestrel()
-                .UseStartup<AspNetCoreStartup>()
-                .UseConfiguration(config)
-                .Build();
-
-            webHost.Start();
-        }
-
-        public void Stop()
-        {
-            webHost.Dispose();
         }
     }
 }

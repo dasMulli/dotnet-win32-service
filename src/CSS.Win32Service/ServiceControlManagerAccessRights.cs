@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
-namespace CSS.ServiceHost
+namespace CSS.Win32Service
 {
     [Flags]
-    public enum ServiceControlManagerAccessRights : uint
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
+    internal enum ServiceControlManagerAccessRights : uint
     {
         Connect = 0x00001,
         CreateService = 0x00002,

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using JetBrains.Annotations;
 
-namespace CSS.ServiceHost
+namespace CSS.Win32Service
 {
+    [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     internal class ServiceHandle : SafeHandle
     {
         internal ServiceHandle() : base(IntPtr.Zero, ownsHandle: true)

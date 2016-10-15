@@ -1,8 +1,10 @@
 ﻿using System;
+using JetBrains.Annotations;
 
-namespace CSS.ServiceHost
+namespace CSS.Win32Service
 {
     [Flags]
+    [PublicAPI]
     public enum Win32AccessMask : uint
     {
         Delete = 0x00010000,

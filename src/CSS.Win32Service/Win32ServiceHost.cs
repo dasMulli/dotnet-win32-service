@@ -1,32 +1,37 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
-using System.Threading;
+using System.Threading.Tasks;
+using JetBrains.Annotations;
 
-namespace CSS.ServiceHost
+namespace CSS.Win32Service
 {
     // This implementation is roughly based on https://msdn.microsoft.com/en-us/library/bb540475(v=vs.85).aspx
+    [PublicAPI]
     public sealed class Win32ServiceHost
     {
-        private readonly IWin32Service service;
-        private string serviceName;
+        private readonly string serviceName;
+        private readonly IWin32ServiceStateMachine stateMachine;
 
         private ServiceStatus serviceStatus = new ServiceStatus(ServiceType.Win32OwnProcess, ServiceState.StartPening, ServiceAcceptedControlCommandsFlags.None, win32ExitCode: 0, serviceSpecificExitCode: 0, checkPoint: 0, waitHint: 0);
+        private ServiceStatusHandle serviceStatusHandle;
 
-        private ServiceStatusHandle serviceStatusHandle = new ServiceStatusHandle();
-
-        private ManualResetEvent stopEvent = new ManualResetEvent(initialState: false);
+        private readonly TaskCompletionSource<int> stopTaskCompletionSource = new TaskCompletionSource<int>();
 
         public Win32ServiceHost(IWin32Service service)
+            : this(service.ServiceName, new SimpleServiceStateMachine(service))
         {
-            this.service = service;
         }
-        
-        public void Run()
-        {
-            serviceName = service.ServiceName; // only query it once
 
-            var serviceTable = new ServiceTableEntry[2]; // second one is null/null
+        public Win32ServiceHost(string serviceName, IWin32ServiceStateMachine stateMachine)
+        {
+            this.serviceName = serviceName;
+            this.stateMachine = stateMachine;
+        }
+
+        public Task<int> RunAsync()
+        {
+            var serviceTable = new ServiceTableEntry[2]; // second one is null/null to indicate termination
             serviceTable[0].serviceName = serviceName;
             serviceTable[0].serviceMainFunction = Marshal.GetFunctionPointerForDelegate<ServiceMainFunction>(ServiceMainFunction);
 
@@ -35,60 +40,77 @@ namespace CSS.ServiceHost
             {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
+            
+            return stopTaskCompletionSource.Task;
+        }
+
+        public int Run()
+        {
+            return RunAsync().Result;
         }
 
         private void ServiceMainFunction(uint numArs, IntPtr firstArg)
         {
-            serviceStatusHandle = Interop.RegisterServiceCtrlHandlerExW(serviceName, ServiceControlHandler, IntPtr.Zero);
-            
+            serviceStatusHandle = Interop.RegisterServiceCtrlHandlerExW(serviceName, HandleServiceControlCommand, IntPtr.Zero);
+
             if (serviceStatusHandle.IsInvalid)
             {
+                stopTaskCompletionSource.SetException(new Win32Exception(Marshal.GetLastWin32Error()));
                 return;
             }
 
-            stopEvent = new ManualResetEvent(initialState: false);
-            
-            ReportServiceStatus(ServiceState.StartPening, win32ExitCode: 0, waitHint: 3000);
-            
-            service.Start();
-            
-            ReportServiceStatus(ServiceState.Running, win32ExitCode: 0, waitHint: 0);
+            ReportServiceStatus(ServiceState.StartPening, ServiceAcceptedControlCommandsFlags.None, win32ExitCode: 0, waitHint: 3000);
 
-            // wait here
-            stopEvent.WaitOne();
-
-            service.Stop();
-
-            ReportServiceStatus(ServiceState.Stopped, win32ExitCode: 0, waitHint: 0);
+            try
+            {
+                stateMachine.OnStart(ReportServiceStatus);
+            }
+            catch
+            {
+                ReportServiceStatus(ServiceState.Stopped, ServiceAcceptedControlCommandsFlags.None, win32ExitCode: -1, waitHint: 0);
+            }
         }
 
         private uint checkpointCounter = 1;
 
-        private void ServiceControlHandler(ServiceControlCommand command, uint eventType, IntPtr eventData, IntPtr eventContext)
+        private void ReportServiceStatus(ServiceState state, ServiceAcceptedControlCommandsFlags acceptedControlCommands, int win32ExitCode, uint waitHint)
         {
-            if (command == ServiceControlCommand.Stop)
+            if (serviceStatus.State == ServiceState.Stopped)
             {
-                ReportServiceStatus(ServiceState.StopPending, win32ExitCode: 0, waitHint: 1000);
-
-                stopEvent.Set();
+                // we refuse to leave or alter the final state
+                return;
             }
-        }
 
-        private void ReportServiceStatus(ServiceState state, uint win32ExitCode, uint waitHint)
-        {
             serviceStatus.State = state;
             serviceStatus.Win32ExitCode = win32ExitCode;
             serviceStatus.WaitHint = waitHint;
+            
+            serviceStatus.AcceptedControlCommands = state == ServiceState.Stopped 
+                ? ServiceAcceptedControlCommandsFlags.None // since we enforce "Stopped" as final state, no longer accept control messages
+                : acceptedControlCommands;
 
-            serviceStatus.AcceptedControlCommands = state == ServiceState.StartPening
-                ? ServiceAcceptedControlCommandsFlags.None
-                : ServiceAcceptedControlCommandsFlags.Stop;
-
-            serviceStatus.CheckPoint = state == ServiceState.Running || state == ServiceState.Stopped
-                ? 0
+            serviceStatus.CheckPoint = state == ServiceState.Running || state == ServiceState.Stopped || state == ServiceState.Paused
+                ? 0 // MSDN: This value is not valid and should be zero when the service does not have a start, stop, pause, or continue operation pending.
                 : checkpointCounter++;
 
             Interop.SetServiceStatus(serviceStatusHandle, ref serviceStatus);
+
+            if (state == ServiceState.Stopped)
+            {
+                stopTaskCompletionSource.TrySetResult(win32ExitCode);
+            }
+        }
+
+        private void HandleServiceControlCommand(ServiceControlCommand command, uint eventType, IntPtr eventData, IntPtr eventContext)
+        {
+            try
+            {
+                stateMachine.OnCommand(command, eventType);
+            }
+            catch
+            {
+                ReportServiceStatus(ServiceState.Stopped, ServiceAcceptedControlCommandsFlags.None, win32ExitCode: -1,  waitHint: 0);
+            }
         }
     }
 }
