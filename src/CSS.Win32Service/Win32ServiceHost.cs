@@ -35,10 +35,17 @@ namespace CSS.Win32Service
             serviceTable[0].serviceName = serviceName;
             serviceTable[0].serviceMainFunction = Marshal.GetFunctionPointerForDelegate<ServiceMainFunction>(ServiceMainFunction);
 
-            // StartServiceCtrlDispatcherW call returns when ServiceMainFunction exits
-            if (!Interop.StartServiceCtrlDispatcherW(serviceTable))
+            try
             {
-                throw new Win32Exception(Marshal.GetLastWin32Error());
+                // StartServiceCtrlDispatcherW call returns when ServiceMainFunction exits
+                if (!Interop.StartServiceCtrlDispatcherW(serviceTable))
+                {
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
+                }
+            }
+            catch (DllNotFoundException dllException)
+            {
+                throw new PlatformNotSupportedException(nameof(Win32ServiceHost) + " is only supported on Windows with service management API set.", dllException);
             }
             
             return stopTaskCompletionSource.Task;

@@ -6,7 +6,7 @@ namespace CSS.Win32Service
     {
         private readonly string machineName;
         private readonly string databaseName;
-        
+
         public Win32ServiceManager(string machineName = null, string databaseName = null)
         {
             this.machineName = machineName;
@@ -28,17 +28,24 @@ namespace CSS.Win32Service
                 throw new ArgumentException("Value cannot be null or empty.", nameof(binaryPath));
             }
 
-            using (var mgr = ServiceControlManager.Connect(machineName, databaseName, ServiceControlManagerAccessRights.All))
+            try
             {
-                using (
-                    var svc = mgr.CreateService(serviceName, displayName, binaryPath, ServiceType.Win32OwnProcess,
-                        autoStart ? ServiceStartType.AutoStart : ServiceStartType.StartOnDemand, errorSeverity, credentials))
+                using (var mgr = ServiceControlManager.Connect(machineName, databaseName, ServiceControlManagerAccessRights.All))
                 {
-                    if (startImmediately)
+                    using (
+                        var svc = mgr.CreateService(serviceName, displayName, binaryPath, ServiceType.Win32OwnProcess,
+                            autoStart ? ServiceStartType.AutoStart : ServiceStartType.StartOnDemand, errorSeverity, credentials))
                     {
-                        svc.Start();
+                        if (startImmediately)
+                        {
+                            svc.Start();
+                        }
                     }
                 }
+            }
+            catch (DllNotFoundException dllException)
+            {
+                throw new PlatformNotSupportedException(nameof(Win32ServiceHost) + " is only supported on Windows with service management API set.", dllException);
             }
         }
 
@@ -49,12 +56,19 @@ namespace CSS.Win32Service
                 throw new ArgumentException("Value cannot be null or empty.", nameof(serviceName));
             }
 
-            using (var mgr = ServiceControlManager.Connect(machineName, databaseName, ServiceControlManagerAccessRights.All))
+            try
             {
-                using (var svc = mgr.OpenService(serviceName, ServiceControlAccessRights.All))
+                using (var mgr = ServiceControlManager.Connect(machineName, databaseName, ServiceControlManagerAccessRights.All))
                 {
-                    svc.Delete();
+                    using (var svc = mgr.OpenService(serviceName, ServiceControlAccessRights.All))
+                    {
+                        svc.Delete();
+                    }
                 }
+            }
+            catch (DllNotFoundException dllException)
+            {
+                throw new PlatformNotSupportedException(nameof(Win32ServiceHost) + " is only supported on Windows with service management API set.", dllException);
             }
         }
     }
