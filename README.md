@@ -19,7 +19,7 @@ Prerequisites:
 * Windows machine
 * **Elevated command propmt**: Run cmd as administrator.
 ```cmd
-> cd src\TestService
+> cd samples\TestService
 > dotnet restore
 > dotnet run --register-service --urls http://*:5080
 ...
