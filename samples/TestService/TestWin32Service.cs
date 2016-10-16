@@ -1,4 +1,5 @@
-﻿using CSS.Win32Service;
+﻿using System;
+using CSS.Win32Service;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
@@ -16,10 +17,25 @@ namespace TestService
 
         public string ServiceName => "Test Service";
 
-        public void Start()
+        public void Start(string[] startupArguments)
         {
+            // in addition to the arguments that the service has been registered with,
+            // each service start may add additional startup parameters.
+            // To test this: Open services console, open service details, enter startup arguments and press start.
+            string[] combinedArguments;
+            if (startupArguments.Length > 0)
+            {
+                combinedArguments = new string[commandLineArguments.Length + startupArguments.Length];
+                Array.Copy(commandLineArguments, combinedArguments, commandLineArguments.Length);
+                Array.Copy(startupArguments, 0, combinedArguments, commandLineArguments.Length, startupArguments.Length);
+            }
+            else
+            {
+                combinedArguments = commandLineArguments;
+            }
+
             var config = new ConfigurationBuilder()
-                .AddCommandLine(commandLineArguments)
+                .AddCommandLine(combinedArguments)
                 .Build();
 
             webHost = new WebHostBuilder()

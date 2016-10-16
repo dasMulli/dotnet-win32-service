@@ -9,6 +9,8 @@ namespace CSS.Win32Service.Tests
     [SuppressMessage("ReSharper", "ArgumentsStyleLiteral")]
     public class SimpleServiceStateMachineTests
     {
+        private static readonly string[] TestStartupArguments = new string[] {"Arg1", "Arg2"};
+
         private readonly ServiceStatusReportCallback statusReportCallback = A.Fake<ServiceStatusReportCallback>();
         private readonly IWin32Service serviceImplmentation = A.Fake<IWin32Service>();
 
@@ -24,10 +26,10 @@ namespace CSS.Win32Service.Tests
         public void ItShallStartImplementationAndReportStarted()
         {
             // When
-            sut.OnStart(statusReportCallback);
+            sut.OnStart(TestStartupArguments, statusReportCallback);
 
             // Then
-            A.CallTo(() => serviceImplmentation.Start()).MustHaveHappened();
+            A.CallTo(() => serviceImplmentation.Start(TestStartupArguments)).MustHaveHappened();
             A.CallTo(() => statusReportCallback(ServiceState.Running, ServiceAcceptedControlCommandsFlags.Stop, 0, 0)).MustHaveHappened();
         }
 
@@ -52,7 +54,7 @@ namespace CSS.Win32Service.Tests
             A.CallTo(serviceImplmentation).Throws<Exception>();
 
             // When
-            sut.OnStart(statusReportCallback);
+            sut.OnStart(TestStartupArguments, statusReportCallback);
 
             // Then
             A.CallTo(() => statusReportCallback(ServiceState.Stopped, ServiceAcceptedControlCommandsFlags.None, -1, 0))
@@ -90,7 +92,7 @@ namespace CSS.Win32Service.Tests
 
         private void GivenTheServiceHasBeenStarted()
         {
-            sut.OnStart(statusReportCallback);
+            sut.OnStart(TestStartupArguments, statusReportCallback);
         }
 
         

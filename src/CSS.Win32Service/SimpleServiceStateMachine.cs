@@ -13,13 +13,13 @@ namespace CSS.Win32Service
         }
 
         [SuppressMessage("ReSharper", "ParameterHidesMember")]
-        public void OnStart(ServiceStatusReportCallback statusReportCallback)
+        public void OnStart(string[] startupArguments, ServiceStatusReportCallback statusReportCallback)
         {
             this.statusReportCallback = statusReportCallback;
 
             try
             {
-                serviceImplementation.Start();
+                serviceImplementation.Start(startupArguments);
 
                 statusReportCallback(ServiceState.Running, ServiceAcceptedControlCommandsFlags.Stop, win32ExitCode: 0, waitHint: 0);
             }

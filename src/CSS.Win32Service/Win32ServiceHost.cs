@@ -71,8 +71,10 @@ namespace CSS.Win32Service
             return RunAsync().Result;
         }
 
-        private void ServiceMainFunction(uint numArs, IntPtr firstArg)
+        private void ServiceMainFunction(int numArgs, IntPtr argPtrPtr)
         {
+            var startupArguments = ParseArguments(numArgs, argPtrPtr);
+            
             serviceStatusHandle = Interop.RegisterServiceCtrlHandlerExW(serviceName, HandleServiceControlCommand, IntPtr.Zero);
 
             if (serviceStatusHandle.IsInvalid)
@@ -85,7 +87,7 @@ namespace CSS.Win32Service
 
             try
             {
-                stateMachine.OnStart(ReportServiceStatus);
+                stateMachine.OnStart(startupArguments, ReportServiceStatus);
             }
             catch
             {
@@ -133,6 +135,19 @@ namespace CSS.Win32Service
             {
                 ReportServiceStatus(ServiceState.Stopped, ServiceAcceptedControlCommandsFlags.None, win32ExitCode: -1,  waitHint: 0);
             }
+        }
+
+        private static string[] ParseArguments(int numArgs, IntPtr argPtrPtr)
+        {
+            // skip first parameter becuase it is the name of the service
+            var args = new string[numArgs - 1];
+            for (var i = 0; i < numArgs - 1; i++)
+            {
+                argPtrPtr = IntPtr.Add(argPtrPtr, IntPtr.Size);
+                var argPtr = Marshal.PtrToStructure<IntPtr>(argPtrPtr);
+                args[i] = Marshal.PtrToStringUni(argPtr);
+            }
+            return args;
         }
     }
 }

@@ -74,7 +74,7 @@ The following szenarios are missing:
 * Proper handling of errors.
   * Basically, everything will throw a `Win32Exception` if something goes wrong.
   * All service implementation exceptions will report exit code -1 / 0xffffffff to the service control manager.
-* Unit tests.
+    Will add exception logging mechanism.
 * Setting / updating the description field.
 * Support for services supporting pause and continue commands as well as other commands (power event, system shutdown)
-  * Partially addressed. Consumers can now implement `IWin32ServiceStateMachine` to implement custom behavior.
+  * Partially addressed. Consumers can now use `IWin32ServiceStateMachine` to implement custom behavior.

@@ -4,7 +4,7 @@
     {
         string ServiceName { get; }
 
-        void Start();
+        void Start(string[] startupArguments);
 
         void Stop();
     }
