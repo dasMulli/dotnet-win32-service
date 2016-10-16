@@ -18,13 +18,28 @@ namespace CSS.Win32Service
 
         private readonly TaskCompletionSource<int> stopTaskCompletionSource = new TaskCompletionSource<int>();
 
-        public Win32ServiceHost(IWin32Service service)
-            : this(service.ServiceName, new SimpleServiceStateMachine(service))
+        public Win32ServiceHost([NotNull] IWin32Service service)
         {
+            if (service == null)
+            {
+                throw new ArgumentNullException(nameof(service));
+            }
+
+            serviceName = service.ServiceName;
+            stateMachine = new SimpleServiceStateMachine(service);
         }
 
-        public Win32ServiceHost(string serviceName, IWin32ServiceStateMachine stateMachine)
+        public Win32ServiceHost([NotNull] string serviceName, [NotNull] IWin32ServiceStateMachine stateMachine)
         {
+            if (serviceName == null)
+            {
+                throw new ArgumentNullException(nameof(serviceName));
+            }
+            if (stateMachine == null)
+            {
+                throw new ArgumentNullException(nameof(stateMachine));
+            }
+
             this.serviceName = serviceName;
             this.stateMachine = stateMachine;
         }
