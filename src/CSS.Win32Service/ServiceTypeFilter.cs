@@ -1,12 +1,11 @@
 ﻿using System;
-using JetBrains.Annotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CSS.Win32Service
 {
-    // TODO: Decide if we want to keep this in. not used because no query methods implemented as this is now in System.ServiceProcess
     [Flags]
-    [PublicAPI]
-    public enum ServiceTypeFilter : uint
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "External API")]
+    internal enum ServiceTypeFilter : uint
     {
         FileSystemDriver = 0x00000002,
         KernelDriver = 0x00000001,

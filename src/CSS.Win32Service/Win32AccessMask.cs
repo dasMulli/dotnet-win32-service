@@ -1,11 +1,11 @@
 ﻿using System;
-using JetBrains.Annotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CSS.Win32Service
 {
     [Flags]
-    [PublicAPI]
-    public enum Win32AccessMask : uint
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "External API")]
+    internal enum Win32AccessMask : uint
     {
         Delete = 0x00010000,
         ReadControl = 0x00020000,

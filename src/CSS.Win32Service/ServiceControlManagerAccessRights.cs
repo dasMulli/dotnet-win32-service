@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace CSS.Win32Service
 {
     [Flags]
-    [SuppressMessage("ReSharper", "UnusedMember.Global")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "External API")]
     internal enum ServiceControlManagerAccessRights : uint
     {
         Connect = 0x00001,

@@ -1,10 +1,9 @@
-﻿using JetBrains.Annotations;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace CSS.Win32Service
 {
-    // TODO: really expose? only a bool flag for autostart is currently exposed through Win32ServiceManager
-    [PublicAPI]
-    public enum ServiceStartType : uint
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "External API")]
+    internal enum ServiceStartType : uint
     {
         StartOnBoot = 0,
         StartOnSystemStart = 1,

@@ -1,13 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using JetBrains.Annotations;
 
 namespace CSS.Win32Service
 {
     [StructLayout(LayoutKind.Sequential)]
     [SuppressMessage("ReSharper", "ConvertToAutoProperty", Justification = "Keep fields to preserve explicit struct layout for marshalling.")]
-    [PublicAPI]
-    public struct ServiceStatus
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "External API")]
+    internal struct ServiceStatus
     {
         private ServiceType serviceType;
         private ServiceState state;

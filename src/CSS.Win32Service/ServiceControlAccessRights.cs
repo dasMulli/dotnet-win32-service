@@ -3,7 +3,7 @@
 namespace CSS.Win32Service
 {
     [Flags]
-    public enum ServiceControlAccessRights : uint
+    internal enum ServiceControlAccessRights : uint
     {
         QueryConfig = 0x00001,
         ChangeConfig = 0x00002,
