@@ -5,7 +5,7 @@
         "emitEntryPoint": true
     },
     "dependencies": {
-        "CSS.Win32Service": "1.0.0-*",
+        "DasMulli.Win32.ServiceUtils": "1.0.0-*",
         "Microsoft.AspNetCore.Server.Kestrel": "1.0.1-*",
         "Microsoft.Extensions.Configuration.CommandLine": "1.0.0"
     },

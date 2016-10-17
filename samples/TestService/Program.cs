@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
-using CSS.Win32Service;
+using DasMulli.Win32.ServiceUtils;
 
 namespace TestService
 {

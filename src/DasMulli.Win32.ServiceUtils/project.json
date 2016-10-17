@@ -1,0 +1,31 @@
+{
+    "version": "1.0.0-*",
+    "authors": [ "Martin Andreas Ullrich" ],
+    "description": "Helper classes to set up and run Win32 services without depending on full .NET Framework.",
+    "buildOptions": {
+        "debugType": "portable",
+        "emitEntryPoint": false,
+        "allowUnsafe": true
+    },
+    "dependencies": {
+        "JetBrains.Annotations": {
+            "version": "10.2.1",
+            "type": "build"
+        },
+        "Microsoft.Win32.Primitives": "4.0.1",
+        "System.Diagnostics.Tools": {
+            "version": "4.0.1",
+            "type": "build"
+        },
+        "System.Runtime.InteropServices": "4.1.0"
+    },
+    "frameworks": {
+        "netstandard1.3": {}
+    },
+    "packOptions": {
+        "licenseUrl": "https://raw.githubusercontent.com/dasMulli/dotnet-win32-service/master/LICENSE",
+        "requireLicenseAcceptance": false,
+        "projectUrl": "https://github.com/dasMulli/dotnet-win32-service",
+        "owners": [ "Martin Andreas Ullrich" ]
+    }
+}
