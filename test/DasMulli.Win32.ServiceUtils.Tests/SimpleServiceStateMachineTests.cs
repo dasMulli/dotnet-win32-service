@@ -17,6 +17,8 @@ namespace DasMulli.Win32.ServiceUtils.Tests
         // subject under test
         private readonly IWin32ServiceStateMachine sut;
 
+        private ServiceStoppedCallback serviceStoppedCallbackPassedToImplementation = null;
+
         public SimpleServiceStateMachineTests()
         {
             sut = new SimpleServiceStateMachine(serviceImplmentation);
@@ -29,7 +31,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests
             sut.OnStart(TestStartupArguments, statusReportCallback);
 
             // Then
-            A.CallTo(() => serviceImplmentation.Start(TestStartupArguments)).MustHaveHappened();
+            A.CallTo(() => serviceImplmentation.Start(TestStartupArguments, A<ServiceStoppedCallback>._)).MustHaveHappened();
             A.CallTo(() => statusReportCallback(ServiceState.Running, ServiceAcceptedControlCommandsFlags.Stop, 0, 0)).MustHaveHappened();
         }
 
@@ -76,6 +78,20 @@ namespace DasMulli.Win32.ServiceUtils.Tests
                 .MustHaveHappened();
         }
 
+        [Fact]
+        public void ItShallReportStoppedWhenServiceStoppedCallbackIsInvoked()
+        {
+            // Given
+            GivenTheServiceHasBeenStarted();
+
+            // When the stopped callback is invoked
+            serviceStoppedCallbackPassedToImplementation();
+
+            // Then
+            A.CallTo(() => statusReportCallback(ServiceState.Stopped, ServiceAcceptedControlCommandsFlags.None, 0, 0))
+                .MustHaveHappened();
+        }
+
         [Theory, MemberData(nameof(UnsupportedCommandExamples))]
         public void ItShallIgnoreUnsupportedCommands(ServiceControlCommand unsupportedCommand)
         {
@@ -92,6 +108,13 @@ namespace DasMulli.Win32.ServiceUtils.Tests
 
         private void GivenTheServiceHasBeenStarted()
         {
+            A.CallTo(() => serviceImplmentation.Start(null, null))
+                .WithAnyArguments()
+                .Invokes((string[] args, ServiceStoppedCallback stoppedCallback) =>
+                {
+                    serviceStoppedCallbackPassedToImplementation = stoppedCallback;
+                });
+
             sut.OnStart(TestStartupArguments, statusReportCallback);
         }
 

@@ -19,7 +19,7 @@ namespace DasMulli.Win32.ServiceUtils
 
             try
             {
-                serviceImplementation.Start(startupArguments);
+                serviceImplementation.Start(startupArguments, HandleServiceImplementationStoppedOnItsOwn);
 
                 statusReportCallback(ServiceState.Running, ServiceAcceptedControlCommandsFlags.Stop, win32ExitCode: 0, waitHint: 0);
             }
@@ -48,6 +48,11 @@ namespace DasMulli.Win32.ServiceUtils
 
                 statusReportCallback(ServiceState.Stopped, ServiceAcceptedControlCommandsFlags.None, win32ExitCode, waitHint: 0);
             }
+        }
+
+        private void HandleServiceImplementationStoppedOnItsOwn()
+        {
+            statusReportCallback(ServiceState.Stopped, ServiceAcceptedControlCommandsFlags.None, win32ExitCode: 0, waitHint: 0);
         }
     }
 }

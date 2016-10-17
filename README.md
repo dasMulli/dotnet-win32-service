@@ -56,7 +56,7 @@ class TestWin32Service : IWin32Service
 {
     public string ServiceName => "Test Service";
 
-    public void Start()
+    public void Start(string[] startupArguments, ServiceStoppedCallback serviceStoppedCallback)
     {
         // Start coolness and return
     }

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
 using DasMulli.Win32.ServiceUtils;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TestService
 {
@@ -9,6 +11,7 @@ namespace TestService
     {
         private readonly string[] commandLineArguments;
         private IWebHost webHost;
+        private bool stopRequestedByWindows;
 
         public TestWin32Service(string[] commandLineArguments)
         {
@@ -17,7 +20,7 @@ namespace TestService
 
         public string ServiceName => "Test Service";
 
-        public void Start(string[] startupArguments)
+        public void Start(string[] startupArguments, ServiceStoppedCallback serviceStoppedCallback)
         {
             // in addition to the arguments that the service has been registered with,
             // each service start may add additional startup parameters.
@@ -44,11 +47,26 @@ namespace TestService
                 .UseConfiguration(config)
                 .Build();
 
+            // Make sure the windows service is stopped if the
+            // ASP.NET Core stack stops for any reason
+            webHost
+                .Services
+                .GetRequiredService<IApplicationLifetime>()
+                .ApplicationStopped
+                .Register(() =>
+                {
+                    if (stopRequestedByWindows == false)
+                    {
+                        serviceStoppedCallback();
+                    }
+                });
+
             webHost.Start();
         }
 
         public void Stop()
         {
+            stopRequestedByWindows = true;
             webHost.Dispose();
         }
     }

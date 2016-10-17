@@ -57,7 +57,7 @@ namespace TestService
         private static void RunInteractive(string[] args)
         {
             var testService = new TestWin32Service(args.Where(a => a != InteractiveFlag).ToArray());
-            testService.Start(new string[0]);
+            testService.Start(new string[0], () => { });
             Console.WriteLine("Running interactively, press enter to stop.");
             Console.ReadLine();
             testService.Stop();
