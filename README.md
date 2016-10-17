@@ -38,16 +38,22 @@ Note that the service may show up as `disabled` for some time until all tools ac
 See this [Stackoverflow question](http://stackoverflow.com/questions/20561990/how-to-solve-the-specified-service-has-been-marked-for-deletion-error).
 
 ## API
-**Subject to change!**
+
+Add a NuGet package reference to `DasMulli.Win32.ServiceUtils`.
 
 Write a windows service using:
 
 ```c#
-public static void Main(string[] args)
+using DasMulli.Win32.ServiceUtils;
+
+class Program
 {
-    var myService = new MyService();
-    var serviceHost = new Win32ServiceHost(testService);
-    serviceHost.Run();
+    public static void Main(string[] args)
+    {
+        var myService = new MyService();
+        var serviceHost = new Win32ServiceHost(testService);
+        serviceHost.Run();
+    }
 }
 
 class TestWin32Service : IWin32Service
