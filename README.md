@@ -1,7 +1,5 @@
 # .NET Standard based Windows Service support for .NET
 
-Warning: Somewhat experimental.
-
 This repo contains a functional prototype of running a .NET Core application as windows service, without
 the need for a wrapper assembly or the full (desktop) .NET Framework.
 It is built using P/Invoke calls into native windows assemblies.

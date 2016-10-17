@@ -1,7 +1,7 @@
 {
-    "version": "1.0.0-*",
+    "version": "1.0.0-beta1",
     "authors": [ "Martin Andreas Ullrich" ],
-    "description": "Helper classes to set up and run Win32 services without depending on full .NET Framework.",
+    "description": "Helper classes to set up and run as Win32 services without depending on full .NET Framework.",
     "buildOptions": {
         "debugType": "portable",
         "emitEntryPoint": false,
