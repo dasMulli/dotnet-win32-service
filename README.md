@@ -56,7 +56,7 @@ class Program
     }
 }
 
-class TestWin32Service : IWin32Service
+class MyService : IWin32Service
 {
     public string ServiceName => "Test Service";
 
@@ -71,6 +71,22 @@ class TestWin32Service : IWin32Service
     }
 }
 ```
+
+You can then register your service via sc.exe (run cmd / powershell as administrator!):
+
+`sc.exe create MyService DisplayName= "My Service" binpath= "C:\Program Files\dotnet\dotnet.exe C:\path\to\MyService.dll --run-as-service"`
+
+Now go the services console / task manager and start your service.
+
+Not that `sc` will instal your service as `SYSTEM` user which has way to many access rights to run things like web apps.
+See [it's reference](https://technet.microsoft.com/en-us/library/cc990289(v=ws.11).aspx) for more options.
+
+If you want to get rid of it again, use:
+
+`sc.exe delete MyService`
+
+You can also create a service that registers itself like the example provided by
+taking a look at [the sample source](./samples/TestService/Program.cs).
 
 ## Limitations
 
