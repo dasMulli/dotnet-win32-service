@@ -12,24 +12,42 @@ namespace DasMulli.Win32.ServiceUtils
     {
         private readonly string serviceName;
         private readonly IWin32ServiceStateMachine stateMachine;
+        private readonly INativeInterop nativeInterop;
 
-        private ServiceStatus serviceStatus = new ServiceStatus(ServiceType.Win32OwnProcess, ServiceState.StartPening, ServiceAcceptedControlCommandsFlags.None, win32ExitCode: 0, serviceSpecificExitCode: 0, checkPoint: 0, waitHint: 0);
+        private ServiceStatus serviceStatus = new ServiceStatus(ServiceType.Win32OwnProcess, ServiceState.StartPening, ServiceAcceptedControlCommandsFlags.None,
+            win32ExitCode: 0, serviceSpecificExitCode: 0, checkPoint: 0, waitHint: 0);
+
         private ServiceStatusHandle serviceStatusHandle;
 
         private readonly TaskCompletionSource<int> stopTaskCompletionSource = new TaskCompletionSource<int>();
 
         public Win32ServiceHost([NotNull] IWin32Service service)
+            : this(service, Win32Interop.Wrapper)
+        {
+        }
+
+        internal Win32ServiceHost([NotNull] IWin32Service service, [NotNull] INativeInterop nativeInterop)
         {
             if (service == null)
             {
                 throw new ArgumentNullException(nameof(service));
             }
+            if (nativeInterop == null)
+            {
+                throw new ArgumentNullException(nameof(nativeInterop));
+            }
 
             serviceName = service.ServiceName;
             stateMachine = new SimpleServiceStateMachine(service);
+            this.nativeInterop = nativeInterop;
         }
 
         public Win32ServiceHost([NotNull] string serviceName, [NotNull] IWin32ServiceStateMachine stateMachine)
+            : this(serviceName, stateMachine, Win32Interop.Wrapper)
+        {
+        }
+
+        internal Win32ServiceHost([NotNull] string serviceName, [NotNull] IWin32ServiceStateMachine stateMachine, [NotNull] INativeInterop nativeInterop)
         {
             if (serviceName == null)
             {
@@ -39,9 +57,14 @@ namespace DasMulli.Win32.ServiceUtils
             {
                 throw new ArgumentNullException(nameof(stateMachine));
             }
+            if (nativeInterop == null)
+            {
+                throw new ArgumentNullException(nameof(nativeInterop));
+            }
 
             this.serviceName = serviceName;
             this.stateMachine = stateMachine;
+            this.nativeInterop = nativeInterop;
         }
 
         public Task<int> RunAsync()
@@ -53,16 +76,17 @@ namespace DasMulli.Win32.ServiceUtils
             try
             {
                 // StartServiceCtrlDispatcherW call returns when ServiceMainFunction exits
-                if (!Interop.StartServiceCtrlDispatcherW(serviceTable))
+                if (!nativeInterop.StartServiceCtrlDispatcherW(serviceTable))
                 {
                     throw new Win32Exception(Marshal.GetLastWin32Error());
                 }
             }
             catch (DllNotFoundException dllException)
             {
-                throw new PlatformNotSupportedException(nameof(Win32ServiceHost) + " is only supported on Windows with service management API set.", dllException);
+                throw new PlatformNotSupportedException(nameof(Win32ServiceHost) + " is only supported on Windows with service management API set.",
+                    dllException);
             }
-            
+
             return stopTaskCompletionSource.Task;
         }
 
@@ -74,8 +98,8 @@ namespace DasMulli.Win32.ServiceUtils
         private void ServiceMainFunction(int numArgs, IntPtr argPtrPtr)
         {
             var startupArguments = ParseArguments(numArgs, argPtrPtr);
-            
-            serviceStatusHandle = Interop.RegisterServiceCtrlHandlerExW(serviceName, HandleServiceControlCommand, IntPtr.Zero);
+
+            serviceStatusHandle = nativeInterop.RegisterServiceCtrlHandlerExW(serviceName, HandleServiceControlCommand, IntPtr.Zero);
 
             if (serviceStatusHandle.IsInvalid)
             {
@@ -108,8 +132,8 @@ namespace DasMulli.Win32.ServiceUtils
             serviceStatus.State = state;
             serviceStatus.Win32ExitCode = win32ExitCode;
             serviceStatus.WaitHint = waitHint;
-            
-            serviceStatus.AcceptedControlCommands = state == ServiceState.Stopped 
+
+            serviceStatus.AcceptedControlCommands = state == ServiceState.Stopped
                 ? ServiceAcceptedControlCommandsFlags.None // since we enforce "Stopped" as final state, no longer accept control messages
                 : acceptedControlCommands;
 
@@ -117,7 +141,7 @@ namespace DasMulli.Win32.ServiceUtils
                 ? 0 // MSDN: This value is not valid and should be zero when the service does not have a start, stop, pause, or continue operation pending.
                 : checkpointCounter++;
 
-            Interop.SetServiceStatus(serviceStatusHandle, ref serviceStatus);
+            nativeInterop.SetServiceStatus(serviceStatusHandle, ref serviceStatus);
 
             if (state == ServiceState.Stopped)
             {
@@ -133,7 +157,7 @@ namespace DasMulli.Win32.ServiceUtils
             }
             catch
             {
-                ReportServiceStatus(ServiceState.Stopped, ServiceAcceptedControlCommandsFlags.None, win32ExitCode: -1,  waitHint: 0);
+                ReportServiceStatus(ServiceState.Stopped, ServiceAcceptedControlCommandsFlags.None, win32ExitCode: -1, waitHint: 0);
             }
         }
 

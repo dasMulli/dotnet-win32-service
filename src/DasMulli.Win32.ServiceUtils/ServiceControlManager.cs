@@ -8,13 +8,15 @@ namespace DasMulli.Win32.ServiceUtils
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     internal class ServiceControlManager : SafeHandle
     {
+        private INativeInterop NativeInterop { get; set; } = Win32Interop.Wrapper;
+
         internal ServiceControlManager() : base(IntPtr.Zero, ownsHandle: true)
         {
         }
 
         protected override bool ReleaseHandle()
         {
-            return Interop.CloseServiceHandle(handle);
+            return NativeInterop.CloseServiceHandle(handle);
         }
 
         public override bool IsInvalid
@@ -26,9 +28,11 @@ namespace DasMulli.Win32.ServiceUtils
             }
         }
 
-        internal static ServiceControlManager Connect(string machineName, string databaseName, ServiceControlManagerAccessRights desiredAccessRights)
+        internal static ServiceControlManager Connect(INativeInterop nativeInterop, string machineName, string databaseName, ServiceControlManagerAccessRights desiredAccessRights)
         {
-            var mgr = Interop.OpenSCManagerW(machineName, databaseName, desiredAccessRights);
+            var mgr = nativeInterop.OpenSCManagerW(machineName, databaseName, desiredAccessRights);
+
+            mgr.NativeInterop = nativeInterop;
 
             if (mgr.IsInvalid)
             {
@@ -40,9 +44,25 @@ namespace DasMulli.Win32.ServiceUtils
 
         public ServiceHandle CreateService(string serviceName, string displayName, string binaryPath, ServiceType serviceType, ServiceStartType startupType, ErrorSeverity errorSeverity, Win32ServiceCredentials credentials)
         {
-            var service = Interop.CreateServiceW(this, serviceName, displayName, ServiceControlAccessRights.All, serviceType, startupType, errorSeverity,
+            var service = NativeInterop.CreateServiceW(this, serviceName, displayName, ServiceControlAccessRights.All, serviceType, startupType, errorSeverity,
                 binaryPath, null,
                 IntPtr.Zero, null, credentials.UserName, credentials.Password);
+
+            service.NativeInterop = NativeInterop;
+
+            if (service.IsInvalid)
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+            
+            return service;
+        }
+
+        public ServiceHandle OpenService(string serviceName, ServiceControlAccessRights desiredControlAccess)
+        {
+            var service = NativeInterop.OpenServiceW(this, serviceName, desiredControlAccess);
+
+            service.NativeInterop = NativeInterop;
 
             if (service.IsInvalid)
             {
@@ -50,18 +70,6 @@ namespace DasMulli.Win32.ServiceUtils
             }
 
             return service;
-        }
-
-        public ServiceHandle OpenService(string serviceName, ServiceControlAccessRights desiredControlAccess)
-        {
-            var svc = Interop.OpenServiceW(this, serviceName, desiredControlAccess);
-
-            if (svc.IsInvalid)
-            {
-                throw new Win32Exception(Marshal.GetLastWin32Error());
-            }
-
-            return svc;
         }
     }
 }

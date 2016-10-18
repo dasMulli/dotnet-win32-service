@@ -7,13 +7,15 @@ namespace DasMulli.Win32.ServiceUtils
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     internal class ServiceStatusHandle : SafeHandle
     {
+        internal INativeInterop NativeInterop { get; set; } = Win32Interop.Wrapper;
+
         internal ServiceStatusHandle() : base(IntPtr.Zero, ownsHandle: true)
         {
         }
 
         protected override bool ReleaseHandle()
         {
-            return Interop.CloseServiceHandle(handle);
+            return NativeInterop.CloseServiceHandle(handle);
         }
 
         public override bool IsInvalid
