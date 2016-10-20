@@ -51,7 +51,7 @@ class Program
     public static void Main(string[] args)
     {
         var myService = new MyService();
-        var serviceHost = new Win32ServiceHost(testService);
+        var serviceHost = new Win32ServiceHost(myService);
         serviceHost.Run();
     }
 }
