@@ -17,7 +17,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests
         // subject under test
         private readonly IWin32ServiceStateMachine sut;
 
-        private ServiceStoppedCallback serviceStoppedCallbackPassedToImplementation = null;
+        private ServiceStoppedCallback serviceStoppedCallbackPassedToImplementation;
 
         public SimpleServiceStateMachineTests()
         {
@@ -119,7 +119,8 @@ namespace DasMulli.Win32.ServiceUtils.Tests
         }
 
         
-        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Needed by test framework.")]
+        [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Needed by test framework.")]
         public static IEnumerable<object[]> UnsupportedCommandExamples
         {
             get

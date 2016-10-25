@@ -12,6 +12,7 @@ namespace DasMulli.Win32.ServiceUtils
 
         ServiceStatusHandle RegisterServiceCtrlHandlerExW(string serviceName, ServiceControlHandler serviceControlHandler, IntPtr context);
         
+        [SuppressMessage("ReSharper", "UnusedMethodReturnValue.Global", Justification = "Matches native signature.")]
         bool SetServiceStatus(ServiceStatusHandle statusHandle, ref ServiceStatus pServiceStatus);
 
         ServiceControlManager OpenSCManagerW(string machineName, string databaseName, ServiceControlManagerAccessRights dwAccess);

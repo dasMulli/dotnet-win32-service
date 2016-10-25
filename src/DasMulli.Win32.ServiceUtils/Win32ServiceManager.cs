@@ -12,7 +12,7 @@ namespace DasMulli.Win32.ServiceUtils
             : this(machineName, databaseName, Win32Interop.Wrapper)
         {
         }
-
+        
         internal Win32ServiceManager(string machineName, string databaseName, INativeInterop nativeInterop)
         {
             this.machineName = machineName;

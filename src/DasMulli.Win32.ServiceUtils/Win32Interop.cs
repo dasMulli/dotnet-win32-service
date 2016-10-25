@@ -5,7 +5,7 @@ namespace DasMulli.Win32.ServiceUtils
 {
     internal static class Win32Interop
     {
-        internal static INativeInterop Wrapper = new InteropWrapper();
+        internal static readonly INativeInterop Wrapper = new InteropWrapper();
 
         // ReSharper disable once InconsistentNaming
         private const string DllServiceCore_L1_1_0 = "api-ms-win-service-core-l1-1-0.dll";

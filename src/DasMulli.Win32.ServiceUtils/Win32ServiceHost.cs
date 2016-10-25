@@ -163,6 +163,10 @@ namespace DasMulli.Win32.ServiceUtils
 
         private static string[] ParseArguments(int numArgs, IntPtr argPtrPtr)
         {
+            if (numArgs <= 0)
+            {
+                return Array.Empty<string>();
+            }
             // skip first parameter becuase it is the name of the service
             var args = new string[numArgs - 1];
             for (var i = 0; i < numArgs - 1; i++)
