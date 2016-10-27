@@ -25,6 +25,10 @@
                 }
             }
         },
-        "net46": {} 
+        "net46": {
+            "frameworkAssemblies": {
+                "System.Runtime.Handles": {} 
+            }
+        } 
     }
 }
