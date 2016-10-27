@@ -8,7 +8,7 @@ namespace DasMulli.Win32.ServiceUtils
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     internal class ServiceControlManager : SafeHandle
     {
-        private INativeInterop NativeInterop { get; set; } = Win32Interop.Wrapper;
+        internal INativeInterop NativeInterop { get; set; } = Win32Interop.Wrapper;
 
         internal ServiceControlManager() : base(IntPtr.Zero, ownsHandle: true)
         {

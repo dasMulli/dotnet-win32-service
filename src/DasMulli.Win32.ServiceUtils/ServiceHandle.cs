@@ -1,11 +1,13 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
 namespace DasMulli.Win32.ServiceUtils
 {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
+    [SuppressMessage("ReSharper", "ClassWithVirtualMembersNeverInherited.Global", Justification = "Subclassed by test proxy")]
     internal class ServiceHandle : SafeHandle
     {
         internal INativeInterop NativeInterop { get; set; } = Win32Interop.Wrapper;
@@ -28,7 +30,7 @@ namespace DasMulli.Win32.ServiceUtils
             }
         }
 
-        public void Start()
+        public virtual void Start()
         {
             if (!NativeInterop.StartServiceW(this, 0, IntPtr.Zero))
             {
@@ -36,7 +38,7 @@ namespace DasMulli.Win32.ServiceUtils
             }
         }
 
-        public void Delete()
+        public virtual void Delete()
         {
             if (!NativeInterop.DeleteService(this))
             {
