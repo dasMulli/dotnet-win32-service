@@ -24,6 +24,11 @@
                     "version": "1.0.1"
                 }
             }
-        }
+        },
+        "net46": {
+            "frameworkAssemblies": {
+                "System.Runtime.Handles": {} 
+            }
+        } 
     }
 }
