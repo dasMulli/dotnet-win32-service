@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
@@ -8,6 +9,7 @@ namespace DasMulli.Win32.ServiceUtils
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     internal class ServiceControlManager : SafeHandle
     {
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Exposed for testing via InternalsVisibleTo.")]
         internal INativeInterop NativeInterop { get; set; } = Win32Interop.Wrapper;
 
         internal ServiceControlManager() : base(IntPtr.Zero, ownsHandle: true)

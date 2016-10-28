@@ -11,6 +11,8 @@ namespace DasMulli.Win32.ServiceUtils
         private const string DllServiceCore_L1_1_0 = "api-ms-win-service-core-l1-1-0.dll";
         // ReSharper disable once InconsistentNaming
         private const string DllServiceManagement_L1_1_0 = "api-ms-win-service-management-l1-1-0.dll";
+        // ReSharper disable once InconsistentNaming
+        private const string DllServiceManagement_L2_1_0 = "api-ms-win-service-management-l2-1-0.dll";
 
         [DllImport(DllServiceManagement_L1_1_0, ExactSpelling = true, SetLastError = true)]
         private static extern bool CloseServiceHandle(IntPtr handle);
@@ -52,6 +54,9 @@ namespace DasMulli.Win32.ServiceUtils
 
         [DllImport(DllServiceManagement_L1_1_0, ExactSpelling = true, SetLastError = true)]
         private static extern bool DeleteService(ServiceHandle service);
+
+        [DllImport(DllServiceManagement_L2_1_0, ExactSpelling = true, SetLastError = true, CharSet = CharSet.Unicode)]
+        private static extern bool ChangeServiceConfig2W(ServiceHandle service, ServiceConfigInfoTypeLevel infoTypeLevel, IntPtr info);
 
         private class InteropWrapper : INativeInterop
         {
@@ -102,6 +107,11 @@ namespace DasMulli.Win32.ServiceUtils
             bool INativeInterop.DeleteService(ServiceHandle service)
             {
                 return DeleteService(service);
+            }
+
+            bool INativeInterop.ChangeServiceConfig2W(ServiceHandle service, ServiceConfigInfoTypeLevel infoTypeLevel, IntPtr info)
+            {
+                return ChangeServiceConfig2W(service, infoTypeLevel, info);
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 using FakeItEasy;
 using FluentAssertions;
 using Xunit;
@@ -13,6 +14,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
         private const string TestDatabaseName = "TestDatabase";
         private const string TestServiceName = "UnitTestService";
         private const string TestServiceDisplayName = "A Test Service";
+        private const string TestServiceDescription = "This describes the Test Service";
         private const string TestServiceBinaryPath = @"C:\Some\Where\service.exe --run-as-service";
         private const ErrorSeverity TestServiceErrorSeverity = ErrorSeverity.Ignore;
         private static readonly Win32ServiceCredentials TestCredentials = new Win32ServiceCredentials(@"ADomain\AUser", "WithAPassword");
@@ -23,6 +25,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
         private readonly ServiceUtils.Win32ServiceManager sut;
 
         private readonly List<string> createdServices = new List<string>();
+        private readonly Dictionary<string, string> serviceDescriptions = new Dictionary<string, string>();
 
         public ServiceCreationTests()
         {
@@ -114,10 +117,37 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
             action.ShouldThrow<Win32Exception>();
         }
 
-        private void WhenATestServiceIsCreated(string testServiceName, bool autoStart, bool startImmediately)
+        [Fact]
+        public void ItCanSetServiceDescription()
         {
-            sut.CreateService(testServiceName, TestServiceDisplayName, TestServiceBinaryPath, TestCredentials, autoStart, startImmediately,
-                TestServiceErrorSeverity);
+            // Given
+            GivenServiceCreationIsPossible(ServiceStartType.AutoStart);
+
+            // When
+            WhenATestServiceIsCreated(TestServiceName, autoStart: true, startImmediately: false, description: TestServiceDescription);
+
+            // Then
+            serviceDescriptions.Should().ContainKey(TestServiceName).WhichValue.Should().Be(TestServiceDescription);
+        }
+
+        [Fact]
+        public void ItDoesNotCallApiForEmptyDescription()
+        {
+            // Given
+            GivenServiceCreationIsPossible(ServiceStartType.AutoStart);
+
+            // When
+            WhenATestServiceIsCreated(TestServiceName, autoStart: true, startImmediately: false, description: string.Empty);
+
+            // Then
+            serviceDescriptions.Should().NotContainKey(TestServiceName);
+            A.CallTo(()=>nativeInterop.ChangeServiceConfig2W(A<ServiceHandle>._, A<ServiceConfigInfoTypeLevel>._, A<IntPtr>._)).MustNotHaveHappened();
+        }
+
+        private void WhenATestServiceIsCreated(string testServiceName, bool autoStart, bool startImmediately, string description = null)
+        {
+            sut.CreateService(testServiceName, TestServiceDisplayName, description, TestServiceBinaryPath, TestCredentials, autoStart,
+                startImmediately, TestServiceErrorSeverity);
         }
 
         private void GivenTheServiceControlManagerCanBeOpened()
@@ -148,10 +178,34 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
                             TestCredentials.UserName, TestCredentials.Password))
                 .ReturnsLazily(call =>
                 {
-                    createdServices.Add((string)call.Arguments[argumentIndex: 1]);
+                    var serviceName = (string)call.Arguments[argumentIndex: 1];
+                    createdServices.Add(serviceName);
+                    A.CallTo(() => nativeInterop.ChangeServiceConfig2W(serviceHandle, ServiceConfigInfoTypeLevel.ServiceDescription, A<IntPtr>._))
+                        .ReturnsLazily(CreateChangeService2WHandler(serviceName));
                     return serviceHandle;
                 });
             return serviceHandle;
+        }
+
+        private Func<ServiceHandle, ServiceConfigInfoTypeLevel, IntPtr, bool> CreateChangeService2WHandler(string serviceName)
+        {
+            return (handle, infoLevel, info) =>
+            {
+                if (infoLevel != ServiceConfigInfoTypeLevel.ServiceDescription)
+                {
+                    return false;
+                }
+                var serviceDescription = Marshal.PtrToStructure<ServiceDescriptionInfo>(info);
+                if (string.IsNullOrEmpty(serviceDescription.ServiceDescription))
+                {
+                    serviceDescriptions.Remove(serviceName);
+                }
+                else
+                {
+                    serviceDescriptions[serviceName] = serviceDescription.ServiceDescription;
+                }
+                return true;
+            };
         }
 
         private void GivenCreatingAServiceIsImpossible()

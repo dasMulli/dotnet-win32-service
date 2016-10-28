@@ -31,11 +31,13 @@ namespace DasMulli.Win32.ServiceUtils
             string dependencies,
             string serviceUserName,
             string servicePassword);
-
+        
         ServiceHandle OpenServiceW(ServiceControlManager serviceControlManager, string serviceName, ServiceControlAccessRights desiredControlAccess);
 
         bool StartServiceW(ServiceHandle service, uint argc, IntPtr wargv);
 
         bool DeleteService(ServiceHandle service);
+
+        bool ChangeServiceConfig2W(ServiceHandle service, ServiceConfigInfoTypeLevel infoTypeLevel, IntPtr info);
     }
 }

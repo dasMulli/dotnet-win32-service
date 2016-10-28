@@ -20,7 +20,7 @@ namespace DasMulli.Win32.ServiceUtils
             this.nativeInterop = nativeInterop;
         }
 
-        public void CreateService(string serviceName, string displayName, string binaryPath, Win32ServiceCredentials credentials, bool autoStart = false, bool startImmediately = false, ErrorSeverity errorSeverity = ErrorSeverity.Normal)
+        public void CreateService(string serviceName, string displayName, string description, string binaryPath, Win32ServiceCredentials credentials, bool autoStart = false, bool startImmediately = false, ErrorSeverity errorSeverity = ErrorSeverity.Normal)
         {
             if (string.IsNullOrEmpty(binaryPath))
             {
@@ -43,6 +43,10 @@ namespace DasMulli.Win32.ServiceUtils
                         var svc = mgr.CreateService(serviceName, displayName, binaryPath, ServiceType.Win32OwnProcess,
                             autoStart ? ServiceStartType.AutoStart : ServiceStartType.StartOnDemand, errorSeverity, credentials))
                     {
+                        if (!string.IsNullOrEmpty(description))
+                        {
+                            svc.SetDescription(description);
+                        }
                         if (startImmediately)
                         {
                             svc.Start();
