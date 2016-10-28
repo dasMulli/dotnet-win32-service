@@ -14,6 +14,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
         private const string TestDatabasename = "TestDatabase";
         private const string TestServiceName = "TestService";
         private const string TestDisplayName = "TestDisplayname";
+        private const string TestDescription = "Test Description";
         private const string TestBinaryPath = "Test.exe";
 
         private readonly ServiceUtils.Win32ServiceManager sut = new ServiceUtils.Win32ServiceManager(TestMachineName, TestDatabasename);
@@ -21,7 +22,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
         [Fact]
         public void ItShallThrowOnCreateServiceWithNullServiceName()
         {
-            Action invocation = () => sut.CreateService(serviceName: null, displayName: TestDisplayName, binaryPath: TestBinaryPath, credentials: Win32ServiceCredentials.LocalService);
+            Action invocation = () => sut.CreateService(serviceName: null, displayName: TestDisplayName, description: TestDescription, binaryPath: TestBinaryPath, credentials: Win32ServiceCredentials.LocalService);
 
             invocation.ShouldThrow<ArgumentException>().Which.ParamName.Should().Be("serviceName");
         }
@@ -29,7 +30,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
         [Fact]
         public void ItShallThrowOnCreateServiceWithNullBinaryPath()
         {
-            Action invocation = () => sut.CreateService(serviceName: TestServiceName, displayName: TestDisplayName, binaryPath: null, credentials: Win32ServiceCredentials.LocalService);
+            Action invocation = () => sut.CreateService(serviceName: TestServiceName, displayName: TestDisplayName, description: TestDescription, binaryPath: null, credentials: Win32ServiceCredentials.LocalService);
 
             invocation.ShouldThrow<ArgumentException>().Which.ParamName.Should().Be("binaryPath");
         }

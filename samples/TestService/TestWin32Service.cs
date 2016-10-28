@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using DasMulli.Win32.ServiceUtils;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;

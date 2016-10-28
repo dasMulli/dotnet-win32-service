@@ -10,6 +10,7 @@ namespace DasMulli.Win32.ServiceUtils
     [SuppressMessage("ReSharper", "ClassWithVirtualMembersNeverInherited.Global", Justification = "Subclassed by test proxy")]
     internal class ServiceHandle : SafeHandle
     {
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Exposed for testing via InternalsVisibleTo.")]
         internal INativeInterop NativeInterop { get; set; } = Win32Interop.Wrapper;
 
         internal ServiceHandle() : base(IntPtr.Zero, ownsHandle: true)
@@ -43,6 +44,24 @@ namespace DasMulli.Win32.ServiceUtils
             if (!NativeInterop.DeleteService(this))
             {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+        }
+
+        public virtual void SetDescription(string description)
+        {
+            var descriptionInfo = new ServiceDescriptionInfo(description ?? string.Empty);
+            var lpDescriptionInfo = Marshal.AllocHGlobal(Marshal.SizeOf<ServiceDescriptionInfo>());
+            try
+            {
+                Marshal.StructureToPtr(descriptionInfo, lpDescriptionInfo, fDeleteOld: false);
+                if (!NativeInterop.ChangeServiceConfig2W(this, ServiceConfigInfoTypeLevel.ServiceDescription, lpDescriptionInfo))
+                {
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
+                }
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(lpDescriptionInfo);
             }
         }
     }

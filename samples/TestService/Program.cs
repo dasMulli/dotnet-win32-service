@@ -13,8 +13,9 @@ namespace TestService
         private const string UnregisterServiceFlag = "--unregister-service";
         private const string InteractiveFlag = "--interactive";
 
-        private const string ServiceName = "Demo Service";
-        private const string ServiceDescription = "Demo ASP.NET Core on .NET Core Service";
+        private const string ServiceName = "DemoService";
+        private const string ServiceDisplayName = "Demo .NET Core Service";
+        private const string ServiceDescription = "Demo ASP.NET Core Service running on .NET Core";
 
         public static void Main(string[] args)
         {
@@ -83,9 +84,9 @@ namespace TestService
 
             // Do not use LocalSystem in production.. but this is good for demos as LocalSystem will have access to some random git-clone path
             new Win32ServiceManager()
-                .CreateService(ServiceName, ServiceDescription, fullServiceCommand, Win32ServiceCredentials.LocalSystem, autoStart: true, startImmediately: true, errorSeverity: ErrorSeverity.Normal);
+                .CreateService(ServiceName, ServiceDisplayName, ServiceDescription, fullServiceCommand, Win32ServiceCredentials.LocalSystem, autoStart: true, startImmediately: true, errorSeverity: ErrorSeverity.Normal);
 
-            Console.WriteLine($@"Sucessfully registered and started service ""{ServiceDescription}""");
+            Console.WriteLine($@"Sucessfully registered and started service ""{ServiceDisplayName}"" (""{ServiceDescription}"")");
         }
 
         private static void UnregisterService()
@@ -93,7 +94,7 @@ namespace TestService
             new Win32ServiceManager()
                                     .DeleteService(ServiceName);
 
-            Console.WriteLine($@"Sucessfully unregistered service ""{ServiceDescription}""");
+            Console.WriteLine($@"Sucessfully unregistered service ""{ServiceDisplayName}"" (""{ServiceDescription}"")");
         }
 
         private static void DisplayHelp()
@@ -101,7 +102,7 @@ namespace TestService
             Console.WriteLine(ServiceDescription);
             Console.WriteLine();
             Console.WriteLine("This demo application is intened to be run as windows service. Use one of the following options:");
-            Console.WriteLine("  --register-service        Registers and starts this program as a windows service named \"" + ServiceDescription + "\"");
+            Console.WriteLine("  --register-service        Registers and starts this program as a windows service named \"" + ServiceDisplayName + "\"");
             Console.WriteLine("                            All additional arguments will be passed to ASP.NET Core's WebHostBuilder.");
             Console.WriteLine("  --unregister-service      Removes the windows service creatd by --register-service.");
             Console.WriteLine("  --interactive             Runs the underlying asp.net core app. Useful to test arguments.");
