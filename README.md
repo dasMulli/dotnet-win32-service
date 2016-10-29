@@ -90,11 +90,10 @@ taking a look at [the sample source](./samples/TestService/Program.cs).
 
 ## Limitations
 
-The following szenarios are missing:
-* Proper handling of errors.
-  * Basically, everything will throw a `Win32Exception` if something goes wrong.
-  * All service implementation exceptions will report exit code -1 / 0xffffffff to the service control manager.
-    Will add exception logging mechanism.
-* Setting / updating the description field.
-* Support for services supporting pause and continue commands as well as other commands (power event, system shutdown)
-  * Partially addressed. Consumers can now use `IWin32ServiceStateMachine` to implement custom behavior.
+* No custom exceptions / error codes. Everything will throw a `Win32Exception` if something goes wrong (It's message should be
+  interpretable on windows).
+* All exceptions thrown by the service implementation will cause the service host
+  to report exit code -1 / 0xffffffff to the service control manager.
+* Currently, no direct support for services supporting pause and continue commands as well as other commands (power event, system shutdown)
+  * However, consumers can now use `IWin32ServiceStateMachine` to implement custom behavior.
+    Copy `SimpleServiceStateMachine` as a starting point to implement extended services.
