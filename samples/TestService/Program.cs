@@ -86,7 +86,7 @@ namespace TestService
             new Win32ServiceManager()
                 .CreateService(ServiceName, ServiceDisplayName, ServiceDescription, fullServiceCommand, Win32ServiceCredentials.LocalSystem, autoStart: true, startImmediately: true, errorSeverity: ErrorSeverity.Normal);
 
-            Console.WriteLine($@"Sucessfully registered and started service ""{ServiceDisplayName}"" (""{ServiceDescription}"")");
+            Console.WriteLine($@"Successfully registered and started service ""{ServiceDisplayName}"" (""{ServiceDescription}"")");
         }
 
         private static void UnregisterService()
@@ -94,7 +94,7 @@ namespace TestService
             new Win32ServiceManager()
                                     .DeleteService(ServiceName);
 
-            Console.WriteLine($@"Sucessfully unregistered service ""{ServiceDisplayName}"" (""{ServiceDescription}"")");
+            Console.WriteLine($@"Successfully unregistered service ""{ServiceDisplayName}"" (""{ServiceDescription}"")");
         }
 
         private static void DisplayHelp()
