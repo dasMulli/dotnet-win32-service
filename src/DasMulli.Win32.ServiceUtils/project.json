@@ -26,6 +26,13 @@
         "licenseUrl": "https://raw.githubusercontent.com/dasMulli/dotnet-win32-service/master/LICENSE",
         "requireLicenseAcceptance": false,
         "projectUrl": "https://github.com/dasMulli/dotnet-win32-service",
-        "owners": [ "Martin Andreas Ullrich" ]
+        "owners": [ "Martin Andreas Ullrich" ],
+        "tags": [
+            "windows",
+            "service",
+            ".net",
+            "core",
+            "netstandard"
+        ]
     }
 }
