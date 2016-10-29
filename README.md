@@ -4,18 +4,18 @@ This repo contains a library for running a .NET Core application as windows serv
 the need for a wrapper assembly or the full (desktop) .NET Framework.
 It is built using P/Invoke calls into native windows assemblies.
 
-Usage szenarios include:
+Usage scenarios include:
 * Running on Windows Nano Server (no full framework but can run windows services)
 * Shipping a modern service application using the latest .NET core version to systems
   where you cannot upgrade to new versions of .NET, but you want to use new framework features.
-* Build truly protable applications that can for example run as service on windows and as daemon on linux,
-  just using runtime checks / switchs
+* Build truly portable applications that can for example run as service on windows and as daemon on linux,
+  just using runtime checks / switches
 
 ## How to use the example application
 Prerequisites:
 * .NET Core SDK Preview 2 / 2.1 (`project.json` support)
 * Windows machine
-* **Elevated command propmt**: Run cmd as administrator.
+* **Elevated command prompt**: Run cmd as administrator.
 ```cmd
 > cd samples\TestService
 > dotnet restore
@@ -34,7 +34,7 @@ The "Services" administrative tool should show the service:
 ...
 Sucessfully unregistered service "Demo ASP.NET Core on .NET Core Service"
 ```
-Note that the service may show up as `disabled` for some time until all tools acessing the windows services apis have been closed.
+Note that the service may show up as `disabled` for some time until all tools accessing the windows services apis have been closed.
 See this [Stackoverflow question](http://stackoverflow.com/questions/20561990/how-to-solve-the-specified-service-has-been-marked-for-deletion-error).
 
 ## API
@@ -78,7 +78,7 @@ You can then register your service via sc.exe (run cmd / powershell as administr
 
 Now go the services console / task manager and start your service.
 
-Not that `sc` will instal your service as `SYSTEM` user which has way to many access rights to run things like web apps.
+Not that `sc` will install your service as `SYSTEM` user which has way to many access rights to run things like web apps.
 See [it's reference](https://technet.microsoft.com/en-us/library/cc990289(v=ws.11).aspx) for more options.
 
 If you want to get rid of it again, use:
