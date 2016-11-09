@@ -14,6 +14,9 @@ namespace DasMulli.Win32.ServiceUtils
         private readonly IWin32ServiceStateMachine stateMachine;
         private readonly INativeInterop nativeInterop;
 
+        private readonly ServiceMainFunction serviceMainFunctionDelegate;
+        private readonly ServiceControlHandler serviceControlHandlerDelegate;
+
         private ServiceStatus serviceStatus = new ServiceStatus(ServiceType.Win32OwnProcess, ServiceState.StartPening, ServiceAcceptedControlCommandsFlags.None,
             win32ExitCode: 0, serviceSpecificExitCode: 0, checkPoint: 0, waitHint: 0);
 
@@ -40,6 +43,9 @@ namespace DasMulli.Win32.ServiceUtils
             serviceName = service.ServiceName;
             stateMachine = new SimpleServiceStateMachine(service);
             this.nativeInterop = nativeInterop;
+
+            serviceMainFunctionDelegate = ServiceMainFunction;
+            serviceControlHandlerDelegate = HandleServiceControlCommand;
         }
 
         public Win32ServiceHost([NotNull] string serviceName, [NotNull] IWin32ServiceStateMachine stateMachine)
@@ -65,13 +71,16 @@ namespace DasMulli.Win32.ServiceUtils
             this.serviceName = serviceName;
             this.stateMachine = stateMachine;
             this.nativeInterop = nativeInterop;
+
+            serviceMainFunctionDelegate = ServiceMainFunction;
+            serviceControlHandlerDelegate = HandleServiceControlCommand;
         }
 
         public Task<int> RunAsync()
         {
             var serviceTable = new ServiceTableEntry[2]; // second one is null/null to indicate termination
             serviceTable[0].serviceName = serviceName;
-            serviceTable[0].serviceMainFunction = Marshal.GetFunctionPointerForDelegate<ServiceMainFunction>(ServiceMainFunction);
+            serviceTable[0].serviceMainFunction = Marshal.GetFunctionPointerForDelegate(serviceMainFunctionDelegate);
 
             try
             {
@@ -99,7 +108,7 @@ namespace DasMulli.Win32.ServiceUtils
         {
             var startupArguments = ParseArguments(numArgs, argPtrPtr);
 
-            serviceStatusHandle = nativeInterop.RegisterServiceCtrlHandlerExW(serviceName, HandleServiceControlCommand, IntPtr.Zero);
+            serviceStatusHandle = nativeInterop.RegisterServiceCtrlHandlerExW(serviceName, serviceControlHandlerDelegate, IntPtr.Zero);
 
             if (serviceStatusHandle.IsInvalid)
             {
