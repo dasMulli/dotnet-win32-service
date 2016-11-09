@@ -1,11 +1,11 @@
 {
-    "version": "1.0.0-*",
+    "version": "1.0.1-*",
     "buildOptions": {
         "debugType": "portable",
         "emitEntryPoint": true
     },
     "dependencies": {
-        "DasMulli.Win32.ServiceUtils": "1.0.0-*",
+        "DasMulli.Win32.ServiceUtils": "1.0.1-*",
         "Microsoft.AspNetCore.Server.Kestrel": "1.0.1-*",
         "Microsoft.Extensions.Configuration.CommandLine": "1.0.0"
     },
