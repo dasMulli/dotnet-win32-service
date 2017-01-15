@@ -45,6 +45,20 @@ namespace DasMulli.Win32.ServiceUtils
             string serviceUserName,
             string servicePassword);
 
+        [DllImport(DllServiceManagement_L2_1_0, ExactSpelling = true, SetLastError = true, CharSet = CharSet.Unicode)]
+        private static extern bool ChangeServiceConfigW(
+            ServiceHandle service,
+            ServiceType serviceType,
+            ServiceStartType startType,
+            ErrorSeverity errorSeverity,
+            string binaryPath,
+            string loadOrderGroup,
+            IntPtr outUIntTagId,
+            string dependencies,
+            string serviceUserName,
+            string servicePassword,
+            string displayName);
+
         [DllImport(DllServiceManagement_L1_1_0, ExactSpelling = true, SetLastError = true, CharSet = CharSet.Unicode)]
         private static extern ServiceHandle OpenServiceW(ServiceControlManager serviceControlManager, string serviceName,
             ServiceControlAccessRights desiredControlAccess);
@@ -92,6 +106,11 @@ namespace DasMulli.Win32.ServiceUtils
             {
                 return CreateServiceW(serviceControlManager, serviceName, displayName, desiredControlAccess, serviceType, startType, errorSeverity,
                     binaryPath, loadOrderGroup, outUIntTagId, dependencies, serviceUserName, servicePassword);
+            }
+
+            bool INativeInterop.ChangeServiceConfigW(ServiceHandle service, ServiceType serviceType, ServiceStartType startType, ErrorSeverity errorSeverity, string binaryPath, string loadOrderGroup, IntPtr outUIntTagId, string dependencies, string serviceUserName, string servicePassword, string displayName)
+            {
+                return ChangeServiceConfigW(service, serviceType, startType, errorSeverity, binaryPath, loadOrderGroup, outUIntTagId, dependencies, serviceUserName, servicePassword, displayName);
             }
 
             ServiceHandle INativeInterop.OpenServiceW(ServiceControlManager serviceControlManager, string serviceName, ServiceControlAccessRights desiredControlAccess)

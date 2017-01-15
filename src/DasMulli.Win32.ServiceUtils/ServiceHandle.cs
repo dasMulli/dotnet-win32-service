@@ -31,11 +31,15 @@ namespace DasMulli.Win32.ServiceUtils
             }
         }
 
-        public virtual void Start()
+        public virtual void Start(bool throwIfAlreadyRunning = true)
         {
             if (!NativeInterop.StartServiceW(this, 0, IntPtr.Zero))
             {
-                throw new Win32Exception(Marshal.GetLastWin32Error());
+                var win32Error = Marshal.GetLastWin32Error();
+                if (win32Error != KnownWin32ErrorCoes.ERROR_SERVICE_ALREADY_RUNNING || throwIfAlreadyRunning)
+                {
+                    throw new Win32Exception(win32Error);
+                }
             }
         }
 
@@ -54,14 +58,26 @@ namespace DasMulli.Win32.ServiceUtils
             try
             {
                 Marshal.StructureToPtr(descriptionInfo, lpDescriptionInfo, fDeleteOld: false);
-                if (!NativeInterop.ChangeServiceConfig2W(this, ServiceConfigInfoTypeLevel.ServiceDescription, lpDescriptionInfo))
-                {
-                    throw new Win32Exception(Marshal.GetLastWin32Error());
+                try {
+                    if (!NativeInterop.ChangeServiceConfig2W(this, ServiceConfigInfoTypeLevel.ServiceDescription, lpDescriptionInfo))
+                    {
+                        throw new Win32Exception(Marshal.GetLastWin32Error());
+                    }
+                } finally {
+                    Marshal.DestroyStructure<ServiceDescriptionInfo>(lpDescriptionInfo);
                 }
             }
             finally
             {
                 Marshal.FreeHGlobal(lpDescriptionInfo);
+            }
+        }
+
+        public virtual void ChangeConfig(string displayName, string binaryPath, ServiceType serviceType, ServiceStartType startupType, ErrorSeverity errorSeverity, Win32ServiceCredentials credentials)
+        {
+            var success = NativeInterop.ChangeServiceConfigW(this, serviceType, startupType, errorSeverity, binaryPath, null, IntPtr.Zero, null, credentials.UserName, credentials.Password, displayName);
+            if(!success) {
+                throw new Win32Exception(Marshal.GetLastWin32Error());
             }
         }
     }

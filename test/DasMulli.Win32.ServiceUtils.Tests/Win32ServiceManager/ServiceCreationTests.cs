@@ -100,7 +100,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
             WhenATestServiceIsCreated(TestServiceName, autoStart: false, startImmediately: true);
 
             // Then
-            A.CallTo(() => service.Start()).MustHaveHappened();
+            A.CallTo(() => service.Start(true)).MustHaveHappened();
         }
 
         [Fact]

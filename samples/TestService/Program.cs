@@ -83,8 +83,18 @@ namespace TestService
             var fullServiceCommand = host + " " + string.Join(" ", remainingArgs);
 
             // Do not use LocalSystem in production.. but this is good for demos as LocalSystem will have access to some random git-clone path
+            // Note that when the service is already registered and running, it will be reconfigured but not restarted
             new Win32ServiceManager()
-                .CreateService(ServiceName, ServiceDisplayName, ServiceDescription, fullServiceCommand, Win32ServiceCredentials.LocalSystem, autoStart: true, startImmediately: true, errorSeverity: ErrorSeverity.Normal);
+                .CreateOrUpdateService(
+                    ServiceName, 
+                    ServiceDisplayName, 
+                    ServiceDescription, 
+                    fullServiceCommand,
+                    Win32ServiceCredentials.LocalSystem,
+                    autoStart: true,
+                    startImmediately: true, 
+                    errorSeverity: ErrorSeverity.Normal
+                );
 
             Console.WriteLine($@"Successfully registered and started service ""{ServiceDisplayName}"" (""{ServiceDescription}"")");
         }
@@ -92,7 +102,7 @@ namespace TestService
         private static void UnregisterService()
         {
             new Win32ServiceManager()
-                                    .DeleteService(ServiceName);
+                .DeleteService(ServiceName);
 
             Console.WriteLine($@"Successfully unregistered service ""{ServiceDisplayName}"" (""{ServiceDescription}"")");
         }
