@@ -62,16 +62,33 @@ namespace DasMulli.Win32.ServiceUtils
 
         public ServiceHandle OpenService(string serviceName, ServiceControlAccessRights desiredControlAccess)
         {
+            ServiceHandle service;
+            Win32Exception errorException;
+
+            if (!TryOpenService(serviceName, desiredControlAccess, out service, out errorException))
+            {
+                throw errorException;
+            }
+
+            return service;
+        }
+
+        public virtual bool TryOpenService(string serviceName, ServiceControlAccessRights desiredControlAccess, out ServiceHandle serviceHandle, out Win32Exception errorException)
+        {
             var service = NativeInterop.OpenServiceW(this, serviceName, desiredControlAccess);
 
             service.NativeInterop = NativeInterop;
 
             if (service.IsInvalid)
             {
-                throw new Win32Exception(Marshal.GetLastWin32Error());
+                errorException = new Win32Exception(Marshal.GetLastWin32Error());
+                serviceHandle = null;
+                return false;
             }
 
-            return service;
+            serviceHandle = service;
+            errorException = null;
+            return true;
         }
     }
 }

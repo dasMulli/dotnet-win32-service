@@ -31,7 +31,20 @@ namespace DasMulli.Win32.ServiceUtils
             string dependencies,
             string serviceUserName,
             string servicePassword);
-        
+
+        bool ChangeServiceConfigW(
+            ServiceHandle service,
+            ServiceType serviceType,
+            ServiceStartType startType,
+            ErrorSeverity errorSeverity,
+            string binaryPath,
+            string loadOrderGroup,
+            IntPtr outUIntTagId,
+            string dependencies,
+            string serviceUserName,
+            string servicePassword,
+            string displayName);
+
         ServiceHandle OpenServiceW(ServiceControlManager serviceControlManager, string serviceName, ServiceControlAccessRights desiredControlAccess);
 
         bool StartServiceW(ServiceHandle service, uint argc, IntPtr wargv);

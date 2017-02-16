@@ -8,7 +8,7 @@ using Xunit;
 
 namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
 {
-    public class ServiceCreationTests
+    public partial class ServiceCreationTests
     {
         private const string TestMachineName = "TestMachine";
         private const string TestDatabaseName = "TestDatabase";
@@ -100,7 +100,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
             WhenATestServiceIsCreated(TestServiceName, autoStart: false, startImmediately: true);
 
             // Then
-            A.CallTo(() => service.Start()).MustHaveHappened();
+            A.CallTo(() => service.Start(true)).MustHaveHappened();
         }
 
         [Fact]
@@ -210,15 +210,19 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
 
         private void GivenCreatingAServiceIsImpossible()
         {
-            var invalidServiceHandle = A.Fake<ServiceHandle>(o => o.Wrapping(new ServiceHandle { NativeInterop = nativeInterop }));
-            A.CallTo(() => invalidServiceHandle.IsInvalid).Returns(value: true);
-
             A.CallTo(
                     () =>
                         nativeInterop.CreateServiceW(A<ServiceControlManager>._, A<string>._, A<string>._, A<ServiceControlAccessRights>._,
                             A<ServiceType>._, A<ServiceStartType>._, A<ErrorSeverity>._, A<string>._, A<string>._, IntPtr.Zero, A<string>._,
                             A<string>._, A<string>._))
-                .Returns(invalidServiceHandle);
+                .Returns(CreateInvalidServiceHandle());
+        }
+
+        private ServiceHandle CreateInvalidServiceHandle()
+        {
+            var invalidServiceHandle = A.Fake<ServiceHandle>(o => o.Wrapping(new ServiceHandle { NativeInterop = nativeInterop }));
+            A.CallTo(() => invalidServiceHandle.IsInvalid).Returns(value: true);
+            return invalidServiceHandle;
         }
 
         private void GivenTheServiceCanBeStarted(ServiceHandle service)
