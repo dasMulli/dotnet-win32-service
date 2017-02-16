@@ -4,7 +4,7 @@
         "debugType": "portable"
     },
     "dependencies": {
-        "DasMulli.Win32.ServiceUtils": "1.0.1-*",
+        "DasMulli.Win32.ServiceUtils": "1.1.0-*",
         "dotnet-test-xunit": "2.2.0-preview2-build1029",
         "FakeItEasy": "3.0.0-beta002-build000066",
         "FluentAssertions": "4.18.0",
