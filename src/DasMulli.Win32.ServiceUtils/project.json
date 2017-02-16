@@ -1,5 +1,5 @@
 {
-    "version": "1.0.1-*",
+    "version": "1.1.0-*",
     "authors": [ "Martin Andreas Ullrich" ],
     "description": "Helper classes to set up and run as Win32 services without depending on full .NET Framework.",
     "buildOptions": {
