@@ -36,6 +36,22 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
         }
 
         [Fact]
+        public void ItShallThrowOnCreateOrUpdateServiceWithNullServiceName()
+        {
+            Action invocation = () => sut.CreateOrUpdateService(serviceName: null, displayName: TestDisplayName, description: TestDescription, binaryPath: TestBinaryPath, credentials: Win32ServiceCredentials.LocalService);
+
+            invocation.ShouldThrow<ArgumentException>().Which.ParamName.Should().Be("serviceName");
+        }
+
+        [Fact]
+        public void ItShallThrowOnCreateOrUpdateServiceWithNullBinaryPath()
+        {
+            Action invocation = () => sut.CreateOrUpdateService(serviceName: TestServiceName, displayName: TestDisplayName, description: TestDescription, binaryPath: null, credentials: Win32ServiceCredentials.LocalService);
+
+            invocation.ShouldThrow<ArgumentException>().Which.ParamName.Should().Be("binaryPath");
+        }
+
+        [Fact]
         public void ItShallThrowOnDeleteServiceWithEmptyServiceName()
         {
             Action invocation = () => sut.DeleteService(serviceName: string.Empty);

@@ -31,10 +31,6 @@ namespace DasMulli.Win32.ServiceUtils
             {
                 throw new ArgumentException("Value cannot be null or empty.", nameof(serviceName));
             }
-            if (string.IsNullOrEmpty(binaryPath))
-            {
-                throw new ArgumentException("Value cannot be null or empty.", nameof(binaryPath));
-            }
 
             try
             {
@@ -74,10 +70,6 @@ namespace DasMulli.Win32.ServiceUtils
             if (string.IsNullOrEmpty(serviceName))
             {
                 throw new ArgumentException("Value cannot be null or empty.", nameof(serviceName));
-            }
-            if (string.IsNullOrEmpty(binaryPath))
-            {
-                throw new ArgumentException("Value cannot be null or empty.", nameof(binaryPath));
             }
 
             try

@@ -73,7 +73,7 @@ namespace DasMulli.Win32.ServiceUtils
             return service;
         }
 
-        public bool TryOpenService(string serviceName, ServiceControlAccessRights desiredControlAccess, out ServiceHandle serviceHandle, out Win32Exception errorException)
+        public virtual bool TryOpenService(string serviceName, ServiceControlAccessRights desiredControlAccess, out ServiceHandle serviceHandle, out Win32Exception errorException)
         {
             var service = NativeInterop.OpenServiceW(this, serviceName, desiredControlAccess);
 
