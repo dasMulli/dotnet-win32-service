@@ -13,7 +13,7 @@ Usage scenarios include:
 
 ## How to use the example application
 Prerequisites:
-* .NET Core SDK Preview 2 / 2.1 (`project.json` support)
+* .NET Core SDK 1.0.0 or higher (`.csproj` based tooling)
 * Windows machine
 * **Elevated command prompt**: Run cmd as administrator.
 ```cmd

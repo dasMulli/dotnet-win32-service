@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\shared.props" />
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.3</TargetFramework>
+    <NetStandardImplicitPackageVersion>1.6.0</NetStandardImplicitPackageVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Description>Helper classes to set up and run as Win32 services without depending on full .NET Framework.</Description>
+    <PackageTags>windows;service;.net;core;netstandard</PackageTags>
+    <PackageProjectUrl>https://github.com/dasMulli/dotnet-win32-service</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/dasMulli/dotnet-win32-service/master/LICENSE</PackageLicenseUrl>
+    <Authors>Martin Andreas Ullrich</Authors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" Version="10.2.1" PrivateAssets="All" />
+  </ItemGroup>
+
+</Project>
