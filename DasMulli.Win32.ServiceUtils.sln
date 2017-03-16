@@ -1,27 +1,26 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{016A8122-429B-45ED-A7A9-FE8DD75510C2}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		global.json = global.json
 		NuGet.Config = NuGet.Config
 		README.md = README.md
+		shared.props = shared.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8F2E12E6-F921-4092-8BD1-0ABC4592AF60}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{89B4BC15-059F-4810-8839-D5AB3C069D03}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "TestService", "samples\TestService\TestService.xproj", "{159FCA66-3F2B-4B54-96B2-3AB70FEA557B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestService", "samples\TestService\TestService.csproj", "{159FCA66-3F2B-4B54-96B2-3AB70FEA557B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{C5C8CC1D-0625-4FD7-9C23-8205288CED6C}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DasMulli.Win32.ServiceUtils", "src\DasMulli.Win32.ServiceUtils\DasMulli.Win32.ServiceUtils.xproj", "{EF3F265C-DD53-4BA8-866A-E894A8D99986}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DasMulli.Win32.ServiceUtils", "src\DasMulli.Win32.ServiceUtils\DasMulli.Win32.ServiceUtils.csproj", "{EF3F265C-DD53-4BA8-866A-E894A8D99986}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DasMulli.Win32.ServiceUtils.Tests", "test\DasMulli.Win32.ServiceUtils.Tests\DasMulli.Win32.ServiceUtils.Tests.xproj", "{D8DA7086-1F54-4E38-8308-3FBD44E04513}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DasMulli.Win32.ServiceUtils.Tests", "test\DasMulli.Win32.ServiceUtils.Tests\DasMulli.Win32.ServiceUtils.Tests.csproj", "{D8DA7086-1F54-4E38-8308-3FBD44E04513}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
