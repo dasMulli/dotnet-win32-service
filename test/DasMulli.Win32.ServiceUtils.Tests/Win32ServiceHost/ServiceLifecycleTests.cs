@@ -62,7 +62,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceHost
             // Then
             A.CallTo(() => serviceStateMachine.OnStart(A<string[]>.That.IsSameSequenceAs(TestServiceStartupArguments), A<ServiceStatusReportCallback>.Ignored))
                 .MustHaveHappened(Repeated.Exactly.Once);
-            reportedServiceStatuses.Should().Contain(status => status.State == ServiceState.StartPening && status.AcceptedControlCommands == ServiceAcceptedControlCommandsFlags.None);
+            reportedServiceStatuses.Should().Contain(status => status.State == ServiceState.StartPending && status.AcceptedControlCommands == ServiceAcceptedControlCommandsFlags.None);
         }
 
         [Fact]
@@ -107,7 +107,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceHost
             runTask.IsCompleted.Should().BeTrue();
             runTask.Result.Should().Be(expected: -1);
             reportedServiceStatuses.Should().HaveCount(expected: 2);
-            reportedServiceStatuses[index: 0].State.Should().Be(ServiceState.StartPening);
+            reportedServiceStatuses[index: 0].State.Should().Be(ServiceState.StartPending);
             reportedServiceStatuses[index: 1].State.Should().Be(ServiceState.Stopped);
             reportedServiceStatuses[index: 1].Win32ExitCode.Should().Be(expected: -1);
         }

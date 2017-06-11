@@ -17,7 +17,7 @@ namespace DasMulli.Win32.ServiceUtils
         private readonly ServiceMainFunction serviceMainFunctionDelegate;
         private readonly ServiceControlHandler serviceControlHandlerDelegate;
 
-        private ServiceStatus serviceStatus = new ServiceStatus(ServiceType.Win32OwnProcess, ServiceState.StartPening, ServiceAcceptedControlCommandsFlags.None,
+        private ServiceStatus serviceStatus = new ServiceStatus(ServiceType.Win32OwnProcess, ServiceState.StartPending, ServiceAcceptedControlCommandsFlags.None,
             win32ExitCode: 0, serviceSpecificExitCode: 0, checkPoint: 0, waitHint: 0);
 
         private ServiceStatusHandle serviceStatusHandle;
@@ -116,7 +116,7 @@ namespace DasMulli.Win32.ServiceUtils
                 return;
             }
 
-            ReportServiceStatus(ServiceState.StartPening, ServiceAcceptedControlCommandsFlags.None, win32ExitCode: 0, waitHint: 3000);
+            ReportServiceStatus(ServiceState.StartPending, ServiceAcceptedControlCommandsFlags.None, win32ExitCode: 0, waitHint: 3000);
 
             try
             {
