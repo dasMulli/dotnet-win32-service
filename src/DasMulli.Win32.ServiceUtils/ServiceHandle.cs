@@ -95,7 +95,7 @@ namespace DasMulli.Win32.ServiceUtils
                 }
                 finally
                 {
-                    Marshal.DestroyStructure<ServiceDescriptionInfo>(lpFailureActions);
+                    Marshal.DestroyStructure<FailureActions>(lpFailureActions);
                 }
             }
             finally
@@ -121,7 +121,7 @@ namespace DasMulli.Win32.ServiceUtils
                 }
                 finally
                 {
-                    Marshal.DestroyStructure<ServiceDescriptionInfo>(lpFailureActionsFlag);
+                    Marshal.DestroyStructure<ServiceFailureActionsFlag>(lpFailureActionsFlag);
                 }
             }
             finally
