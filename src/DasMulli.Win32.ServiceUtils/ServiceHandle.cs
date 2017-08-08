@@ -73,6 +73,57 @@ namespace DasMulli.Win32.ServiceUtils
             }
         }
 
+        public virtual void SetFailureActions(ServiceFailureActions serviceFailureActions)
+        {
+            var failureActions = new FailureActions(serviceFailureActions.ResetPeriod, serviceFailureActions.RebootMessage, serviceFailureActions.RestartCommand, serviceFailureActions.Actions);
+            var lpFailureActions = Marshal.AllocHGlobal(Marshal.SizeOf<FailureActions>());
+            try
+            {
+                Marshal.StructureToPtr(failureActions, lpFailureActions, fDeleteOld: false);
+                try
+                {
+                    if (!NativeInterop.ChangeServiceConfig2W(this, ServiceConfigInfoTypeLevel.FailureActions, lpFailureActions))
+                    {
+                        throw new Win32Exception(Marshal.GetLastWin32Error());
+                    }
+                }
+                finally
+                {
+                    Marshal.DestroyStructure<ServiceDescriptionInfo>(lpFailureActions);
+                }
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(lpFailureActions);
+            }
+        }
+
+        public virtual void SetFailureActionFlag(bool enabled)
+        {
+            var failureActionsFlag = new ServiceFailureActionsFlag(enabled);
+            var lpFailureActionsFlag = Marshal.AllocHGlobal(Marshal.SizeOf<ServiceFailureActionsFlag>());
+            try
+            {
+                Marshal.StructureToPtr(failureActionsFlag, lpFailureActionsFlag, fDeleteOld: false);
+                try
+                {
+                    if (!NativeInterop.ChangeServiceConfig2W(this, ServiceConfigInfoTypeLevel.FailureActions, lpFailureActionsFlag))
+                    {
+                        throw new Win32Exception(Marshal.GetLastWin32Error());
+                    }
+                }
+                finally
+                {
+                    Marshal.DestroyStructure<ServiceDescriptionInfo>(lpFailureActionsFlag);
+                }
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(lpFailureActionsFlag);
+            }
+        }
+
+
         public virtual void ChangeConfig(string displayName, string binaryPath, ServiceType serviceType, ServiceStartType startupType, ErrorSeverity errorSeverity, Win32ServiceCredentials credentials)
         {
             var success = NativeInterop.ChangeServiceConfigW(this, serviceType, startupType, errorSeverity, binaryPath, null, IntPtr.Zero, null, credentials.UserName, credentials.Password, displayName);
