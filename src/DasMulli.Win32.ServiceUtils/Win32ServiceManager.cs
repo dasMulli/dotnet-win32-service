@@ -110,8 +110,11 @@ namespace DasMulli.Win32.ServiceUtils
             existingService.ChangeConfig(displayName, binaryPath, ServiceType.Win32OwnProcess,
                 autoStart ? ServiceStartType.AutoStart : ServiceStartType.StartOnDemand, errorSeverity, credentials);
             existingService.SetDescription(description);
-            existingService.SetFailureActions(serviceFailureActions);
-            existingService.SetFailureActionFlag(failureActionsOnNonCrashFailures);
+            if (serviceFailureActions != null)
+            {
+                existingService.SetFailureActions(serviceFailureActions);
+                existingService.SetFailureActionFlag(failureActionsOnNonCrashFailures);
+            }
             existingService.Start(throwIfAlreadyRunning: false);
         }
 
