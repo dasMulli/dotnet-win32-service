@@ -79,13 +79,11 @@ namespace DasMulli.Win32.ServiceUtils
 
         public virtual void SetFailureActions(ServiceFailureActions serviceFailureActions)
         {
-            var failureActions = serviceFailureActions == null ? new FailureActions(TimeSpan.MaxValue, null, null, null) : new FailureActions(serviceFailureActions.ResetPeriod, serviceFailureActions.RebootMessage, serviceFailureActions.RestartCommand, serviceFailureActions.Actions);
-            
-            var lpFailureActions = Marshal.AllocHGlobal(Marshal.SizeOf<FailureActions>());
+            var failureActions = serviceFailureActions == null ? ServiceFailureActionsInfo.Default : new ServiceFailureActionsInfo(serviceFailureActions.ResetPeriod, serviceFailureActions.RebootMessage, serviceFailureActions.RestartCommand, serviceFailureActions.Actions);
+            var lpFailureActions = Marshal.AllocHGlobal(Marshal.SizeOf<ServiceFailureActionsInfo>());
             try
             {
                 Marshal.StructureToPtr(failureActions, lpFailureActions, fDeleteOld: false);
-                
                 try
                 {
                     if (!NativeInterop.ChangeServiceConfig2W(this, ServiceConfigInfoTypeLevel.FailureActions, lpFailureActions))
@@ -95,7 +93,7 @@ namespace DasMulli.Win32.ServiceUtils
                 }
                 finally
                 {
-                    Marshal.DestroyStructure<FailureActions>(lpFailureActions);
+                    Marshal.DestroyStructure<ServiceFailureActionsInfo>(lpFailureActions);
                 }
             }
             finally
@@ -129,8 +127,7 @@ namespace DasMulli.Win32.ServiceUtils
                 Marshal.FreeHGlobal(lpFailureActionsFlag);
             }
         }
-
-
+        
         public virtual void ChangeConfig(string displayName, string binaryPath, ServiceType serviceType, ServiceStartType startupType, ErrorSeverity errorSeverity, Win32ServiceCredentials credentials)
         {
             var success = NativeInterop.ChangeServiceConfigW(this, serviceType, startupType, errorSeverity, binaryPath, null, IntPtr.Zero, null, credentials.UserName, credentials.Password, displayName);

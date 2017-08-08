@@ -55,8 +55,12 @@ namespace DasMulli.Win32.ServiceUtils
                     svc.SetDescription(description);
                 }
 
-                svc.SetFailureActions(serviceFailureActions);
-                svc.SetFailureActionFlag(failureActionsOnNonCrashFailures);
+                if (serviceFailureActions != null)
+                {
+                    svc.SetFailureActions(serviceFailureActions);
+                    svc.SetFailureActionFlag(failureActionsOnNonCrashFailures);
+                }
+
                 if (startImmediately)
                 {
                     svc.Start();

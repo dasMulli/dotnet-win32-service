@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace DasMulli.Win32.ServiceUtils
 {
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    internal struct FailureActions
+
+    [StructLayout(LayoutKind.Sequential)]
+    [SuppressMessage("ReSharper", "ConvertToAutoProperty", Justification = "Keep fields to preserve explicit struct layout for marshalling.")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "External API")]
+    internal struct ServiceFailureActionsInfo
     {
         [MarshalAs(UnmanagedType.U4)] private uint dwResetPeriod;
         [MarshalAs(UnmanagedType.LPStr)] private string lpRebootMsg;
@@ -14,12 +17,26 @@ namespace DasMulli.Win32.ServiceUtils
         [MarshalAs(UnmanagedType.U4)] private int cActions;
         private IntPtr lpsaActions;
 
-        public ScAction[] Actions => MarshalUnmananagedArray2Struct<ScAction>(lpsaActions, cActions);
+        public TimeSpan ResetPeriod => TimeSpan.FromMilliseconds(dwResetPeriod);
+
+        public string RebootMsg => lpRebootMsg;
+
+        public string Command => lpCommand;
+
+        public int CountActions => cActions;
+
+        public ScAction[] Actions => lpsaActions.MarshalUnmananagedArrayToStruct<ScAction>(cActions);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FailureActions"/> class.
+        /// This is the default, as reported by Windows.
         /// </summary>
-        internal FailureActions(TimeSpan resetPeriod, string rebootMessage, string restartCommand, IReadOnlyCollection<ScAction> actions)
+        internal static ServiceFailureActionsInfo Default =
+            new ServiceFailureActionsInfo {dwResetPeriod = 0, lpRebootMsg = null, lpCommand = null, cActions = 0, lpsaActions = IntPtr.Zero};
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ServiceFailureActionsInfo"/> class.
+        /// </summary>
+        internal ServiceFailureActionsInfo(TimeSpan resetPeriod, string rebootMessage, string restartCommand, IReadOnlyCollection<ScAction> actions)
         {
             dwResetPeriod = resetPeriod == TimeSpan.MaxValue ? uint.MaxValue : (uint) Math.Round(resetPeriod.TotalMilliseconds);
             lpRebootMsg = rebootMessage;
@@ -34,8 +51,7 @@ namespace DasMulli.Win32.ServiceUtils
                 {
                     throw new Exception(string.Format("Unable to allocate memory for service action, error was: 0x{0:X}", Marshal.GetLastWin32Error()));
                 }
-
-                // Marshal.StructureToPtr(action, lpsaActions, false);
+                
                 var nextAction = lpsaActions;
 
                 foreach (var action in actions)
@@ -48,20 +64,6 @@ namespace DasMulli.Win32.ServiceUtils
             {
                 lpsaActions = IntPtr.Zero;
             }
-        }
-
-        private static T[] MarshalUnmananagedArray2Struct<T>(IntPtr unmanagedArray, int length)
-        {
-            var size = Marshal.SizeOf<T>();
-            var mangagedArray = new T[length];
-
-            for (int i = 0; i < length; i++)
-            {
-                IntPtr ins = new IntPtr(unmanagedArray.ToInt64() + i * size);
-                mangagedArray[i] = Marshal.PtrToStructure<T>(ins);
-            }
-
-            return mangagedArray;
         }
     }
 }
