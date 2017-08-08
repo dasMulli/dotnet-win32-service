@@ -21,7 +21,13 @@ namespace DasMulli.Win32.ServiceUtils
             this.nativeInterop = nativeInterop;
         }
 
-        public void CreateService(string serviceName, string displayName, string description, string binaryPath, Win32ServiceCredentials credentials, bool autoStart = false, bool startImmediately = false, ErrorSeverity errorSeverity = ErrorSeverity.Normal, ServiceFailureActions serviceFailureActions = null, bool failureActionsOnNonCrashFailures = false)
+        public void CreateService(string serviceName, string displayName, string description, string binaryPath, Win32ServiceCredentials credentials,
+            bool autoStart = false, bool startImmediately = false, ErrorSeverity errorSeverity = ErrorSeverity.Normal)
+        {
+            CreateService(serviceName, displayName, description, binaryPath, credentials, null, false, autoStart, startImmediately, errorSeverity);
+        }
+
+        public void CreateService(string serviceName, string displayName, string description, string binaryPath, Win32ServiceCredentials credentials, ServiceFailureActions serviceFailureActions, bool failureActionsOnNonCrashFailures, bool autoStart = false, bool startImmediately = false, ErrorSeverity errorSeverity = ErrorSeverity.Normal)
         {
             if (string.IsNullOrEmpty(binaryPath))
             {
@@ -68,7 +74,14 @@ namespace DasMulli.Win32.ServiceUtils
             }
         }
 
-        public void CreateOrUpdateService(string serviceName, string displayName, string description, string binaryPath, Win32ServiceCredentials credentials, bool autoStart = false, bool startImmediately = false, ErrorSeverity errorSeverity = ErrorSeverity.Normal, ServiceFailureActions serviceFailureActions = null, bool failureActionsOnNonCrashFailures = false)
+        public void CreateOrUpdateService(string serviceName, string displayName, string description, string binaryPath,
+            Win32ServiceCredentials credentials, bool autoStart = false, bool startImmediately = false, ErrorSeverity errorSeverity = ErrorSeverity.Normal)
+        {
+            CreateOrUpdateService(serviceName, displayName, description, binaryPath, credentials, null, false, autoStart, startImmediately, errorSeverity);
+        }
+
+
+        public void CreateOrUpdateService(string serviceName, string displayName, string description, string binaryPath, Win32ServiceCredentials credentials, ServiceFailureActions serviceFailureActions, bool failureActionsOnNonCrashFailures, bool autoStart = false, bool startImmediately = false, ErrorSeverity errorSeverity = ErrorSeverity.Normal)
         {
             if (string.IsNullOrEmpty(binaryPath))
             {

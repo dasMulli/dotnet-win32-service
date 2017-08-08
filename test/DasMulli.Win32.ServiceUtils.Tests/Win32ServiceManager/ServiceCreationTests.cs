@@ -204,8 +204,8 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
 
         private void WhenATestServiceIsCreated(string testServiceName, bool autoStart, bool startImmediately, string description = null, ServiceFailureActions serviceFailureActions = null , bool failureActionsOnNonCrashFailures = false)
         {
-            sut.CreateService(testServiceName, TestServiceDisplayName, description, TestServiceBinaryPath, TestCredentials, autoStart,
-                startImmediately, TestServiceErrorSeverity, serviceFailureActions, failureActionsOnNonCrashFailures);
+            sut.CreateService(testServiceName, TestServiceDisplayName, description, TestServiceBinaryPath, TestCredentials, serviceFailureActions,
+                failureActionsOnNonCrashFailures, autoStart, startImmediately, TestServiceErrorSeverity);
         }
 
         private void GivenTheServiceControlManagerCanBeOpened()

@@ -175,8 +175,9 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
 
         private void WhenATestServiceIsCreatedOrUpdated(string testServiceName, bool autoStart, bool startImmediately, ServiceFailureActions serviceFailureActions = null, bool failureActionsOnNonCrashFailures = false)
         {
-            sut.CreateOrUpdateService(testServiceName, TestServiceDisplayName, TestServiceDescription, TestServiceBinaryPath, TestCredentials, autoStart,
-                startImmediately, TestServiceErrorSeverity, serviceFailureActions, failureActionsOnNonCrashFailures);
+            sut.CreateOrUpdateService(testServiceName, TestServiceDisplayName, TestServiceDescription, TestServiceBinaryPath, TestCredentials,
+                serviceFailureActions, failureActionsOnNonCrashFailures, autoStart,
+                startImmediately, TestServiceErrorSeverity);
         }
 
         private void ThenTheServiceHasBeenUpdated(ServiceHandle serviceHandle, ServiceStartType serviceStartType)
