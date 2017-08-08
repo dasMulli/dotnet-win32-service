@@ -191,23 +191,46 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
         {
             return (handle, infoLevel, info) =>
             {
-                if (infoLevel != ServiceConfigInfoTypeLevel.ServiceDescription)
+                switch (infoLevel)
                 {
-                    return false;
-                }
-                var serviceDescription = Marshal.PtrToStructure<ServiceDescriptionInfo>(info);
-                if (string.IsNullOrEmpty(serviceDescription.ServiceDescription))
-                {
-                    serviceDescriptions.Remove(serviceName);
-                }
-                else
-                {
-                    serviceDescriptions[serviceName] = serviceDescription.ServiceDescription;
-                }
-                return true;
-            };
-        }
+                    case ServiceConfigInfoTypeLevel.ServiceDescription:
+                        var serviceDescription = Marshal.PtrToStructure<ServiceDescriptionInfo>(info);
+                        if (string.IsNullOrEmpty(serviceDescription.ServiceDescription))
+                        {
+                            serviceDescriptions.Remove(serviceName);
+                        }
+                        else
+                        {
+                            serviceDescriptions[serviceName] = serviceDescription.ServiceDescription;
+                        }
+                        return true;
+                    case ServiceConfigInfoTypeLevel.FailureActions:
 
+                        return true;
+                    case ServiceConfigInfoTypeLevel.FailureActionsFlag:
+
+                        return true;
+                    case ServiceConfigInfoTypeLevel.DelayedAutoStartInfo:
+                        break;
+                    case ServiceConfigInfoTypeLevel.ServiceSidInfo:
+                        break;
+                    case ServiceConfigInfoTypeLevel.RequiredPrivilegesInfo:
+                        break;
+                    case ServiceConfigInfoTypeLevel.PreShutdownInfo:
+                        break;
+                    case ServiceConfigInfoTypeLevel.TriggerInfo:
+                        break;
+                    case ServiceConfigInfoTypeLevel.PreferredNode:
+                        break;
+                    case ServiceConfigInfoTypeLevel.LaunchProtected:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(infoLevel), infoLevel, null);
+                }
+
+                return false;
+            };
+        } 
         private void GivenCreatingAServiceIsImpossible()
         {
             A.CallTo(
