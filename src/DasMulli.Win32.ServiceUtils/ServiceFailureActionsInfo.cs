@@ -17,7 +17,7 @@ namespace DasMulli.Win32.ServiceUtils
         [MarshalAs(UnmanagedType.U4)] private int cActions;
         private IntPtr lpsaActions;
 
-        public TimeSpan ResetPeriod => TimeSpan.FromMilliseconds(dwResetPeriod);
+        public TimeSpan ResetPeriod => TimeSpan.FromSeconds(dwResetPeriod);
 
         public string RebootMsg => lpRebootMsg;
 
