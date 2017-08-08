@@ -38,7 +38,7 @@ namespace DasMulli.Win32.ServiceUtils
         /// </summary>
         internal ServiceFailureActionsInfo(TimeSpan resetPeriod, string rebootMessage, string restartCommand, IReadOnlyCollection<ScAction> actions)
         {
-            dwResetPeriod = resetPeriod == TimeSpan.MaxValue ? uint.MaxValue : (uint) Math.Round(resetPeriod.TotalMilliseconds);
+            dwResetPeriod = resetPeriod == TimeSpan.MaxValue ? uint.MaxValue : (uint) Math.Round(resetPeriod.TotalSeconds);
             lpRebootMsg = rebootMessage;
             lpCommand = restartCommand;
             cActions = actions?.Count ?? 0;
