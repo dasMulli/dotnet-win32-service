@@ -26,6 +26,8 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
 
         private readonly List<string> createdServices = new List<string>();
         private readonly Dictionary<string, string> serviceDescriptions = new Dictionary<string, string>();
+        private readonly Dictionary<string, FailureActions> failureActions = new Dictionary<string, FailureActions>();
+        private readonly Dictionary<string, bool> failureActionsFlags = new Dictionary<string, bool>();
 
         public ServiceCreationTests()
         {
@@ -141,13 +143,13 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
 
             // Then
             serviceDescriptions.Should().NotContainKey(TestServiceName);
-            A.CallTo(()=>nativeInterop.ChangeServiceConfig2W(A<ServiceHandle>._, A<ServiceConfigInfoTypeLevel>._, A<IntPtr>._)).MustNotHaveHappened();
+            A.CallTo(() => nativeInterop.ChangeServiceConfig2W(A<ServiceHandle>._, A<ServiceConfigInfoTypeLevel>.That.Matches(level => level == ServiceConfigInfoTypeLevel.ServiceDescription), A<IntPtr>._)).MustNotHaveHappened();
         }
 
-        private void WhenATestServiceIsCreated(string testServiceName, bool autoStart, bool startImmediately, string description = null)
+        private void WhenATestServiceIsCreated(string testServiceName, bool autoStart, bool startImmediately, string description = null, ServiceFailureActions serviceFailureActions = null , bool failureActionsOnNonCrashFailures = false)
         {
             sut.CreateService(testServiceName, TestServiceDisplayName, description, TestServiceBinaryPath, TestCredentials, autoStart,
-                startImmediately, TestServiceErrorSeverity);
+                startImmediately, TestServiceErrorSeverity, serviceFailureActions, failureActionsOnNonCrashFailures);
         }
 
         private void GivenTheServiceControlManagerCanBeOpened()
@@ -182,6 +184,10 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
                     createdServices.Add(serviceName);
                     A.CallTo(() => nativeInterop.ChangeServiceConfig2W(serviceHandle, ServiceConfigInfoTypeLevel.ServiceDescription, A<IntPtr>._))
                         .ReturnsLazily(CreateChangeService2WHandler(serviceName));
+                    A.CallTo(() => nativeInterop.ChangeServiceConfig2W(serviceHandle, ServiceConfigInfoTypeLevel.FailureActions, A<IntPtr>._))
+                        .ReturnsLazily(CreateChangeService2WHandler(serviceName));
+                    A.CallTo(() => nativeInterop.ChangeServiceConfig2W(serviceHandle, ServiceConfigInfoTypeLevel.FailureActionsFlag, A<IntPtr>._))
+                        .ReturnsLazily(CreateChangeService2WHandler(serviceName));
                     return serviceHandle;
                 });
             return serviceHandle;
@@ -205,10 +211,19 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
                         }
                         return true;
                     case ServiceConfigInfoTypeLevel.FailureActions:
-
+                        var failureAction = Marshal.PtrToStructure<FailureActions>(info);
+                        if (failureAction.Actions.Length == 0)
+                        {
+                            failureActions.Remove(serviceName);
+                        }
+                        else
+                        {
+                            failureActions[serviceName] = failureAction;
+                        }
                         return true;
                     case ServiceConfigInfoTypeLevel.FailureActionsFlag:
-
+                        var failureActionFlag = Marshal.PtrToStructure<ServiceFailureActionsFlag>(info);
+                        failureActionsFlags[serviceName] = failureActionFlag.Flag;
                         return true;
                     case ServiceConfigInfoTypeLevel.DelayedAutoStartInfo:
                         break;
