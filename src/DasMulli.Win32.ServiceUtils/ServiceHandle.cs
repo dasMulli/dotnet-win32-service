@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
@@ -58,12 +59,15 @@ namespace DasMulli.Win32.ServiceUtils
             try
             {
                 Marshal.StructureToPtr(descriptionInfo, lpDescriptionInfo, fDeleteOld: false);
-                try {
+                try
+                {
                     if (!NativeInterop.ChangeServiceConfig2W(this, ServiceConfigInfoTypeLevel.ServiceDescription, lpDescriptionInfo))
                     {
                         throw new Win32Exception(Marshal.GetLastWin32Error());
                     }
-                } finally {
+                }
+                finally
+                {
                     Marshal.DestroyStructure<ServiceDescriptionInfo>(lpDescriptionInfo);
                 }
             }
@@ -75,11 +79,13 @@ namespace DasMulli.Win32.ServiceUtils
 
         public virtual void SetFailureActions(ServiceFailureActions serviceFailureActions)
         {
-            var failureActions = new FailureActions(serviceFailureActions.ResetPeriod, serviceFailureActions.RebootMessage, serviceFailureActions.RestartCommand, serviceFailureActions.Actions);
+            var failureActions = serviceFailureActions == null ? new FailureActions(TimeSpan.MaxValue, null, null, null) : new FailureActions(serviceFailureActions.ResetPeriod, serviceFailureActions.RebootMessage, serviceFailureActions.RestartCommand, serviceFailureActions.Actions);
+            
             var lpFailureActions = Marshal.AllocHGlobal(Marshal.SizeOf<FailureActions>());
             try
             {
                 Marshal.StructureToPtr(failureActions, lpFailureActions, fDeleteOld: false);
+                
                 try
                 {
                     if (!NativeInterop.ChangeServiceConfig2W(this, ServiceConfigInfoTypeLevel.FailureActions, lpFailureActions))
@@ -107,7 +113,8 @@ namespace DasMulli.Win32.ServiceUtils
                 Marshal.StructureToPtr(failureActionsFlag, lpFailureActionsFlag, fDeleteOld: false);
                 try
                 {
-                    if (!NativeInterop.ChangeServiceConfig2W(this, ServiceConfigInfoTypeLevel.FailureActions, lpFailureActionsFlag))
+                    bool result = NativeInterop.ChangeServiceConfig2W(this, ServiceConfigInfoTypeLevel.FailureActionsFlag, lpFailureActionsFlag);
+                    if (!result)
                     {
                         throw new Win32Exception(Marshal.GetLastWin32Error());
                     }

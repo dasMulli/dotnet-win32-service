@@ -8,26 +8,18 @@ namespace DasMulli.Win32.ServiceUtils
     {
         private ScActionType _Type;
         private uint _Delay;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ScAction"/> class.
-        /// </summary>
-        public ScAction(ScActionType type, TimeSpan delay)
-        {
-            _Type = type;
-            _Delay = (uint) Math.Round(delay.TotalMilliseconds);
-        }
-
+        
         public ScActionType Type
         {
             get => _Type;
             set => _Type = value;
         }
 
-        public uint Delay
+        public TimeSpan Delay
         {
-            get => _Delay;
-            set => _Delay = value;
+            get => TimeSpan.FromMilliseconds(_Delay);
+        
+            set => _Delay = (uint)Math.Round(value.TotalMilliseconds);
         }
     }
 }
