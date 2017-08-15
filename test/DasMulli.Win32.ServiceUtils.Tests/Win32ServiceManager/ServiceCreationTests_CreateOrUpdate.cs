@@ -121,7 +121,23 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
 
             // Then
             serviceDescriptions.Should().NotContainKey(TestServiceName);
-            A.CallTo(() => nativeInterop.ChangeServiceConfig2W(A<ServiceHandle>._, A<ServiceConfigInfoTypeLevel>._, A<IntPtr>._)).MustNotHaveHappened();
+            A.CallTo(() => nativeInterop.ChangeServiceConfig2W(A<ServiceHandle>._, A<ServiceConfigInfoTypeLevel>.That.Matches(level => level == ServiceConfigInfoTypeLevel.ServiceDescription), A<IntPtr>._)).MustNotHaveHappened();
+        }
+
+
+        [Fact]
+        public void ItDoesNotCallApiForNullFailureActionsOnCreateOrUpdate()
+        {
+            // Given
+            GivenAServiceDoesNotExist(TestServiceName);
+            GivenServiceCreationIsPossible(ServiceStartType.AutoStart);
+
+            // When
+            WhenATestServiceIsCreatedOrUpdated(TestServiceName, autoStart: true, startImmediately: false, description: string.Empty, serviceFailureActions:null);
+
+            // Then
+            failureActions.Should().NotContainKey(TestServiceName);
+            A.CallTo(() => nativeInterop.ChangeServiceConfig2W(A<ServiceHandle>._, A<ServiceConfigInfoTypeLevel>.That.Matches(level => level == ServiceConfigInfoTypeLevel.FailureActions), A<IntPtr>._)).MustNotHaveHappened();
         }
 
         [Fact]
@@ -153,10 +169,10 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
                 .AssignsOutAndRefParameters(CreateInvalidServiceHandle(), new Win32Exception(errorServiceDoesNotExist));
         }
 
-        private void WhenATestServiceIsCreatedOrUpdated(string testServiceName, bool autoStart, bool startImmediately, string description = null)
+        private void WhenATestServiceIsCreatedOrUpdated(string testServiceName, bool autoStart, bool startImmediately, string description = null, ServiceFailureActions serviceFailureActions = null, bool failureActionsOnNonCrashFailures = false)
         {
-            sut.CreateOrUpdateService(testServiceName, TestServiceDisplayName, description, TestServiceBinaryPath, TestCredentials, autoStart,
-                startImmediately, TestServiceErrorSeverity);
+            sut.CreateOrUpdateService(testServiceName, TestServiceDisplayName, description, TestServiceBinaryPath, TestCredentials, serviceFailureActions,
+                failureActionsOnNonCrashFailures, autoStart, startImmediately, TestServiceErrorSeverity);
         }
     }
 }
