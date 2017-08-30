@@ -7,12 +7,25 @@ namespace DasMulli.Win32.ServiceUtils
     {
         internal static readonly INativeInterop Wrapper = new InteropWrapper();
 
+#if NETSTANDARD2_0
+        // in .NET Core 2.0, ms-api-* facades are no longer deployed since
+        // Windows Nano Server 2016 shipped with inverse forwarding dlls
+        // so advapi32.dll is safe and requires a lesser service pack level on win7 / server2008
+
+        // ReSharper disable once InconsistentNaming
+        private const string DllServiceCore_L1_1_0 = "advapi32.dll";
+        // ReSharper disable once InconsistentNaming
+        private const string DllServiceManagement_L1_1_0 = "advapi32.dll";
+        // ReSharper disable once InconsistentNaming
+        private const string DllServiceManagement_L2_1_0 = "advapi32.dll";
+#else
         // ReSharper disable once InconsistentNaming
         private const string DllServiceCore_L1_1_0 = "api-ms-win-service-core-l1-1-0.dll";
         // ReSharper disable once InconsistentNaming
         private const string DllServiceManagement_L1_1_0 = "api-ms-win-service-management-l1-1-0.dll";
         // ReSharper disable once InconsistentNaming
         private const string DllServiceManagement_L2_1_0 = "api-ms-win-service-management-l2-1-0.dll";
+#endif
 
         [DllImport(DllServiceManagement_L1_1_0, ExactSpelling = true, SetLastError = true)]
         private static extern bool CloseServiceHandle(IntPtr handle);
