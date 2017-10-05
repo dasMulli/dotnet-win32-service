@@ -16,39 +16,46 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
         private const string TestDisplayName = "TestDisplayname";
         private const string TestDescription = "Test Description";
         private const string TestBinaryPath = "Test.exe";
+        
+        private static ServiceDefinitionBuilder CreateTestServiceDefinitionBuilder()
+            => new ServiceDefinitionBuilder(TestServiceName)
+                .WithDisplayName(TestDisplayName)
+                .WithDescription(TestDescription)
+                .WithBinaryPath(TestBinaryPath)
+                .WithCredentials(Win32ServiceCredentials.LocalService);
 
         private readonly ServiceUtils.Win32ServiceManager sut = new ServiceUtils.Win32ServiceManager(TestMachineName, TestDatabasename);
 
         [Fact]
         public void ItShallThrowOnCreateServiceWithNullServiceName()
         {
-            Action invocation = () => sut.CreateService(serviceName: null, displayName: TestDisplayName, description: TestDescription, binaryPath: TestBinaryPath, credentials: Win32ServiceCredentials.LocalService);
+            Action invocation = () => sut.CreateService(CreateTestServiceDefinitionBuilder().WithServiceName(null).BuildNonValidating());
 
-            invocation.ShouldThrow<ArgumentException>().Which.ParamName.Should().Be("serviceName");
+            invocation.ShouldThrow<ArgumentException>().Which.ParamName.Should().Be("serviceDefinition");
         }
 
         [Fact]
         public void ItShallThrowOnCreateServiceWithNullBinaryPath()
         {
-            Action invocation = () => sut.CreateService(serviceName: TestServiceName, displayName: TestDisplayName, description: TestDescription, binaryPath: null, credentials: Win32ServiceCredentials.LocalService);
+            Action invocation = () => sut.CreateService(CreateTestServiceDefinitionBuilder().WithBinaryPath(null).BuildNonValidating());
 
-            invocation.ShouldThrow<ArgumentException>().Which.ParamName.Should().Be("binaryPath");
+            invocation.ShouldThrow<ArgumentException>().Which.ParamName.Should().Be("serviceDefinition");
         }
 
         [Fact]
         public void ItShallThrowOnCreateOrUpdateServiceWithNullServiceName()
         {
-            Action invocation = () => sut.CreateOrUpdateService(serviceName: null, displayName: TestDisplayName, description: TestDescription, binaryPath: TestBinaryPath, credentials: Win32ServiceCredentials.LocalService);
+            Action invocation = () => sut.CreateOrUpdateService(CreateTestServiceDefinitionBuilder().WithServiceName(null).BuildNonValidating());
 
-            invocation.ShouldThrow<ArgumentException>().Which.ParamName.Should().Be("serviceName");
+            invocation.ShouldThrow<ArgumentException>().Which.ParamName.Should().Be("serviceDefinition");
         }
 
         [Fact]
         public void ItShallThrowOnCreateOrUpdateServiceWithNullBinaryPath()
         {
-            Action invocation = () => sut.CreateOrUpdateService(serviceName: TestServiceName, displayName: TestDisplayName, description: TestDescription, binaryPath: null, credentials: Win32ServiceCredentials.LocalService);
+            Action invocation = () => sut.CreateOrUpdateService(CreateTestServiceDefinitionBuilder().WithBinaryPath(null).BuildNonValidating());
 
-            invocation.ShouldThrow<ArgumentException>().Which.ParamName.Should().Be("binaryPath");
+            invocation.ShouldThrow<ArgumentException>().Which.ParamName.Should().Be("serviceDefinition");
         }
 
         [Fact]

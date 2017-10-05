@@ -30,6 +30,19 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
                 new ScAction {Delay = TimeSpan.FromSeconds(60), Type = ScActionType.ScActionRestart}
             });
 
+        private static ServiceDefinitionBuilder CreateTestServiceDefinitionBuilder()
+            => new ServiceDefinitionBuilder(TestServiceName)
+                .WithDisplayName(TestServiceDisplayName)
+                .WithDescription(TestServiceDescription)
+                .WithBinaryPath(TestServiceBinaryPath)
+                .WithCredentials(TestCredentials)
+                .WithErrorSeverity(TestServiceErrorSeverity)
+                .WithFailureActions(TestServiceFailureActions)
+                .WithFailureActionsOnNonCrashFailures(true)
+                .WithAutoStart(true);
+
+        private static ServiceDefinition CreateTestServiceDefinition() => CreateTestServiceDefinitionBuilder().Build();
+
         private readonly INativeInterop nativeInterop = A.Fake<INativeInterop>();
         private readonly ServiceControlManager serviceControlManager;
 
@@ -51,34 +64,33 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
             var existingService = GivenAServiceExists(TestServiceName, canBeUpdated: true);
 
             // When
-            WhenATestServiceIsCreatedOrUpdated(TestServiceName, autoStart, startImmediately: true);
+            WhenATestServiceIsCreatedOrUpdated(CreateTestServiceDefinitionBuilder().WithAutoStart(autoStart).Build(), startImmediately: true);
 
             // Then
             ThenTheServiceHasBeenUpdated(existingService, serviceStartType);
         }
 
         [Fact]
-        internal void ItDoesNotChangeServiceFailureActionsIfTheyAreNull()
+        internal void ItChangesServiceFailureActionsIfTheyAreNull()
         {
             // Given
             var existingService = GivenAServiceExists(TestServiceName, canBeUpdated: true);
 
             // When
-            WhenATestServiceIsCreatedOrUpdated(TestServiceName, autoStart: true, startImmediately: true, serviceFailureActions: null);
+            WhenATestServiceIsCreatedOrUpdated(CreateTestServiceDefinitionBuilder().WithFailureActions(null).Build(), startImmediately: true);
 
             // Then
-            A.CallTo(existingService).Where(call => call.Method.Name == nameof(existingService.SetFailureActions))
-                .MustNotHaveHappened();
+            A.CallTo(() => existingService.SetFailureActions(null)).MustHaveHappened();
         }
 
         [Fact]
-        internal void ItDoesServiceFailureActionsIfTheyAreSpecified()
+        internal void ItDoesSetServiceFailureActionsFlagIfItIsSpecified()
         {
             // Given
             var existingService = GivenAServiceExists(TestServiceName, canBeUpdated: true);
 
             // When
-            WhenATestServiceIsCreatedOrUpdated(TestServiceName, autoStart: true, startImmediately: true, serviceFailureActions: TestServiceFailureActions, failureActionsOnNonCrashFailures:true);
+            WhenATestServiceIsCreatedOrUpdated(CreateTestServiceDefinitionBuilder().WithFailureActionsOnNonCrashFailures(true).Build(), startImmediately: true);
 
             // Then
             A.CallTo(() => existingService.SetFailureActions(TestServiceFailureActions)).MustHaveHappened();
@@ -92,7 +104,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
             GivenAServiceExists(TestServiceName, canBeUpdated: false);
 
             // When
-            Action action = () => WhenATestServiceIsCreatedOrUpdated(TestServiceName, autoStart: true, startImmediately: true);
+            Action action = () => WhenATestServiceIsCreatedOrUpdated(CreateTestServiceDefinition(), startImmediately: true);
 
             // Then
             action.ShouldThrow<Win32Exception>();
@@ -106,7 +118,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
             GivenTheDescriptionOfAServiceCannotBeUpdated(existingService);
 
             // When
-            Action action = () => WhenATestServiceIsCreatedOrUpdated(TestServiceName, autoStart: true, startImmediately: true);
+            Action action = () => WhenATestServiceIsCreatedOrUpdated(CreateTestServiceDefinition(), startImmediately: true);
 
             // Then
             action.ShouldThrow<Win32Exception>();
@@ -119,7 +131,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
             var existingService = GivenAServiceExists(TestServiceName, canBeUpdated: true);
 
             // When
-            WhenATestServiceIsCreatedOrUpdated(TestServiceName, autoStart: true, startImmediately: true);
+            WhenATestServiceIsCreatedOrUpdated(CreateTestServiceDefinition(), startImmediately: true);
 
             // Then
             A.CallTo(() => existingService.Start(false)).MustHaveHappened();
@@ -173,11 +185,9 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
                             .Returns(value: false);
         }
 
-        private void WhenATestServiceIsCreatedOrUpdated(string testServiceName, bool autoStart, bool startImmediately, ServiceFailureActions serviceFailureActions = null, bool failureActionsOnNonCrashFailures = false)
+        private void WhenATestServiceIsCreatedOrUpdated(ServiceDefinition serviceDefinition, bool startImmediately)
         {
-            sut.CreateOrUpdateService(testServiceName, TestServiceDisplayName, TestServiceDescription, TestServiceBinaryPath, TestCredentials,
-                serviceFailureActions, failureActionsOnNonCrashFailures, autoStart,
-                startImmediately, TestServiceErrorSeverity);
+            sut.CreateOrUpdateService(serviceDefinition, startImmediately);
         }
 
         private void ThenTheServiceHasBeenUpdated(ServiceHandle serviceHandle, ServiceStartType serviceStartType)
