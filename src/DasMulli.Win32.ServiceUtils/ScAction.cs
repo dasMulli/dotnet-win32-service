@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using JetBrains.Annotations;
 
 namespace DasMulli.Win32.ServiceUtils
 {
     [StructLayout(LayoutKind.Sequential)]
     [SuppressMessage("ReSharper", "ConvertToAutoProperty", Justification = "Keep fields to preserve explicit struct layout for marshalling.")]
-    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "External API")]
+    [PublicAPI]
     public struct ScAction:IEquatable<ScAction>
     {
         private ScActionType _Type;

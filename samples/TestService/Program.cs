@@ -84,17 +84,15 @@ namespace TestService
 
             // Do not use LocalSystem in production.. but this is good for demos as LocalSystem will have access to some random git-clone path
             // Note that when the service is already registered and running, it will be reconfigured but not restarted
-            new Win32ServiceManager()
-                .CreateOrUpdateService(
-                    ServiceName, 
-                    ServiceDisplayName, 
-                    ServiceDescription, 
-                    fullServiceCommand,
-                    Win32ServiceCredentials.LocalSystem,
-                    autoStart: true,
-                    startImmediately: true, 
-                    errorSeverity: ErrorSeverity.Normal
-                );
+            var serviceDefinition = new ServiceDefinitionBuilder(ServiceName)
+                .WithDisplayName(ServiceDisplayName)
+                .WithDescription(ServiceDescription)
+                .WithBinaryPath(fullServiceCommand)
+                .WithCredentials(Win32ServiceCredentials.LocalSystem)
+                .WithAutoStart(true)
+                .Build();
+
+            new Win32ServiceManager().CreateOrUpdateService(serviceDefinition, startImmediately: true);
 
             Console.WriteLine($@"Successfully registered and started service ""{ServiceDisplayName}"" (""{ServiceDescription}"")");
         }

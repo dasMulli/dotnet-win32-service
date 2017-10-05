@@ -24,25 +24,35 @@ namespace DasMulli.Win32.ServiceUtils
         public void CreateService(string serviceName, string displayName, string description, string binaryPath, Win32ServiceCredentials credentials,
             bool autoStart = false, bool startImmediately = false, ErrorSeverity errorSeverity = ErrorSeverity.Normal)
         {
-            CreateService(serviceName, displayName, description, binaryPath, credentials, null, false, autoStart, startImmediately, errorSeverity);
+            CreateService(
+                new ServiceDefinitionBuilder(serviceName)
+                    .WithDisplayName(displayName)
+                    .WithDescription(description)
+                    .WithBinaryPath(binaryPath)
+                    .WithCredentials(credentials)
+                    .WithAutoStart(autoStart)
+                    .WithErrorSeverity(errorSeverity)
+                    .Build(),
+                startImmediately
+            );
         }
 
-        public void CreateService(string serviceName, string displayName, string description, string binaryPath, Win32ServiceCredentials credentials, ServiceFailureActions serviceFailureActions, bool failureActionsOnNonCrashFailures, bool autoStart = false, bool startImmediately = false, ErrorSeverity errorSeverity = ErrorSeverity.Normal)
+        public void CreateService(ServiceDefinition serviceDefinition, bool startImmediately = false)
         {
-            if (string.IsNullOrEmpty(binaryPath))
+            if (string.IsNullOrEmpty(serviceDefinition.BinaryPath))
             {
-                throw new ArgumentException("Value cannot be null or empty.", nameof(binaryPath));
+                throw new ArgumentException($"Invalid service definition. {nameof(ServiceDefinition.BinaryPath)} must not be null or empty.", nameof(serviceDefinition));
             }
-            if (string.IsNullOrEmpty(serviceName))
+            if (string.IsNullOrEmpty(serviceDefinition.ServiceName))
             {
-                throw new ArgumentException("Value cannot be null or empty.", nameof(serviceName));
+                throw new ArgumentException($"Invalid service definition. {nameof(ServiceDefinition.ServiceName)} must not be null or empty.", nameof(serviceDefinition));
             }
 
             try
             {
                 using (var mgr = ServiceControlManager.Connect(nativeInterop, machineName, databaseName, ServiceControlManagerAccessRights.All))
                 {
-                    DoCreateService(mgr, serviceName, displayName, description, binaryPath, credentials, autoStart, startImmediately, errorSeverity, serviceFailureActions, failureActionsOnNonCrashFailures);
+                    DoCreateService(mgr, serviceDefinition, startImmediately);
                 }
             }
             catch (DllNotFoundException dllException)
@@ -51,20 +61,22 @@ namespace DasMulli.Win32.ServiceUtils
             }
         }
 
-        private void DoCreateService(ServiceControlManager serviceControlManager, string serviceName, string displayName, string description, string binaryPath, Win32ServiceCredentials credentials, bool autoStart, bool startImmediately, ErrorSeverity errorSeverity, ServiceFailureActions serviceFailureActions, bool failureActionsOnNonCrashFailures)
+        private void DoCreateService(ServiceControlManager serviceControlManager, ServiceDefinition serviceDefinition, bool startImmediately)
         {
-            using (var svc = serviceControlManager.CreateService(serviceName, displayName, binaryPath, ServiceType.Win32OwnProcess,
-                    autoStart ? ServiceStartType.AutoStart : ServiceStartType.StartOnDemand, errorSeverity, credentials))
+            using (var svc = serviceControlManager.CreateService(serviceDefinition.ServiceName, serviceDefinition.DisplayName, serviceDefinition.BinaryPath, ServiceType.Win32OwnProcess,
+                    serviceDefinition.AutoStart ? ServiceStartType.AutoStart : ServiceStartType.StartOnDemand, serviceDefinition.ErrorSeverity, serviceDefinition.Credentials))
             {
+                var description = serviceDefinition.Description;
                 if (!string.IsNullOrEmpty(description))
                 {
                     svc.SetDescription(description);
                 }
 
+                var serviceFailureActions = serviceDefinition.FailureActions;
                 if (serviceFailureActions != null)
                 {
                     svc.SetFailureActions(serviceFailureActions);
-                    svc.SetFailureActionFlag(failureActionsOnNonCrashFailures);
+                    svc.SetFailureActionFlag(serviceDefinition.FailureActionsOnNonCrashFailures);
                 }
 
                 if (startImmediately)
@@ -73,39 +85,30 @@ namespace DasMulli.Win32.ServiceUtils
                 }
             }
         }
-
-        public void CreateOrUpdateService(string serviceName, string displayName, string description, string binaryPath,
-            Win32ServiceCredentials credentials, bool autoStart = false, bool startImmediately = false, ErrorSeverity errorSeverity = ErrorSeverity.Normal)
+        
+        public void CreateOrUpdateService(ServiceDefinition serviceDefinition, bool startImmediately = false)
         {
-            CreateOrUpdateService(serviceName, displayName, description, binaryPath, credentials, null, false, autoStart, startImmediately, errorSeverity);
-        }
-
-
-        public void CreateOrUpdateService(string serviceName, string displayName, string description, string binaryPath, Win32ServiceCredentials credentials, ServiceFailureActions serviceFailureActions, bool failureActionsOnNonCrashFailures, bool autoStart = false, bool startImmediately = false, ErrorSeverity errorSeverity = ErrorSeverity.Normal)
-        {
-            if (string.IsNullOrEmpty(binaryPath))
+            if (string.IsNullOrEmpty(serviceDefinition.BinaryPath))
             {
-                throw new ArgumentException("Value cannot be null or empty.", nameof(binaryPath));
+                throw new ArgumentException($"Invalid service definition. {nameof(ServiceDefinition.BinaryPath)} must not be null or empty.", nameof(serviceDefinition));
             }
-            if (string.IsNullOrEmpty(serviceName))
+            if (string.IsNullOrEmpty(serviceDefinition.ServiceName))
             {
-                throw new ArgumentException("Value cannot be null or empty.", nameof(serviceName));
+                throw new ArgumentException($"Invalid service definition. {nameof(ServiceDefinition.ServiceName)} must not be null or empty.", nameof(serviceDefinition));
             }
 
             try
             {
                 using (var mgr = ServiceControlManager.Connect(nativeInterop, machineName, databaseName, ServiceControlManagerAccessRights.All))
                 {
-                    ServiceHandle existingService;
-                    Win32Exception errorException;
-                    if (mgr.TryOpenService(serviceName, ServiceControlAccessRights.All, out existingService, out errorException)) {
+                    if (mgr.TryOpenService(serviceDefinition.ServiceName, ServiceControlAccessRights.All, out var existingService, out var errorException)) {
                         using(existingService)
                         {
-                            DoUpdateService(displayName, description, binaryPath, credentials, autoStart, errorSeverity, existingService, serviceFailureActions, failureActionsOnNonCrashFailures);
+                            DoUpdateService(existingService, serviceDefinition, startImmediately);
                         }
                     } else {
                         if (errorException.NativeErrorCode == KnownWin32ErrorCoes.ERROR_SERVICE_DOES_NOT_EXIST) {
-                            DoCreateService(mgr, serviceName, displayName, description, binaryPath, credentials, autoStart, startImmediately, errorSeverity, serviceFailureActions, failureActionsOnNonCrashFailures);
+                            DoCreateService(mgr, serviceDefinition, startImmediately);
                         } else {
                             throw errorException;
                         }
@@ -118,17 +121,18 @@ namespace DasMulli.Win32.ServiceUtils
             }
         }
 
-        private static void DoUpdateService(string displayName, string description, string binaryPath, Win32ServiceCredentials credentials, bool autoStart, ErrorSeverity errorSeverity, ServiceHandle existingService, ServiceFailureActions serviceFailureActions, bool failureActionsOnNonCrashFailures)
+        private static void DoUpdateService(ServiceHandle existingService, ServiceDefinition serviceDefinition, bool startIfNotRunning)
         {
-            existingService.ChangeConfig(displayName, binaryPath, ServiceType.Win32OwnProcess,
-                autoStart ? ServiceStartType.AutoStart : ServiceStartType.StartOnDemand, errorSeverity, credentials);
-            existingService.SetDescription(description);
-            if (serviceFailureActions != null)
+            existingService.ChangeConfig(serviceDefinition.DisplayName, serviceDefinition.BinaryPath, ServiceType.Win32OwnProcess,
+                serviceDefinition.AutoStart ? ServiceStartType.AutoStart : ServiceStartType.StartOnDemand, serviceDefinition.ErrorSeverity,
+                serviceDefinition.Credentials);
+            existingService.SetDescription(serviceDefinition.Description);
+            existingService.SetFailureActions(serviceDefinition.FailureActions);
+            existingService.SetFailureActionFlag(serviceDefinition.FailureActionsOnNonCrashFailures);
+            if (startIfNotRunning)
             {
-                existingService.SetFailureActions(serviceFailureActions);
-                existingService.SetFailureActionFlag(failureActionsOnNonCrashFailures);
+                existingService.Start(throwIfAlreadyRunning: false);
             }
-            existingService.Start(throwIfAlreadyRunning: false);
         }
 
         public void DeleteService(string serviceName)
