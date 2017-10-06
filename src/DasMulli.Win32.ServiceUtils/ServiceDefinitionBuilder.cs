@@ -15,6 +15,7 @@ namespace DasMulli.Win32.ServiceUtils
         public bool FailureActionsOnNonCrashFailures { get; set; }
         public bool AutoStart { get; set; } = true;
         public ErrorSeverity ErrorSeverity { get; set; } = ErrorSeverity.Normal;
+        public bool DelayedAutoStart { get; set; }
 
         public ServiceDefinitionBuilder()
         {
@@ -36,6 +37,7 @@ namespace DasMulli.Win32.ServiceUtils
             FailureActionsOnNonCrashFailures = definition.FailureActionsOnNonCrashFailures;
             AutoStart = definition.AutoStart;
             ErrorSeverity = definition.ErrorSeverity;
+            DelayedAutoStart = definition.DelayedAutoStart;
         }
 
         public ServiceDefinitionBuilder(ServiceDefinitionBuilder definitionBuilder)
@@ -49,9 +51,10 @@ namespace DasMulli.Win32.ServiceUtils
             FailureActionsOnNonCrashFailures = definitionBuilder.FailureActionsOnNonCrashFailures;
             AutoStart = definitionBuilder.AutoStart;
             ErrorSeverity = definitionBuilder.ErrorSeverity;
+            DelayedAutoStart = definitionBuilder.DelayedAutoStart;
         }
 
-        public ServiceDefinition Build()
+        public virtual ServiceDefinition Build()
         {
             if (string.IsNullOrEmpty(ServiceName))
             {
@@ -71,7 +74,8 @@ namespace DasMulli.Win32.ServiceUtils
                 FailureActions = FailureActions,
                 FailureActionsOnNonCrashFailures = FailureActionsOnNonCrashFailures,
                 AutoStart = AutoStart,
-                ErrorSeverity = ErrorSeverity
+                ErrorSeverity = ErrorSeverity,
+                DelayedAutoStart = DelayedAutoStart
             };
         }
 
@@ -126,6 +130,12 @@ namespace DasMulli.Win32.ServiceUtils
         public ServiceDefinitionBuilder WithErrorSeverity(ErrorSeverity errorSeverity)
         {
             ErrorSeverity = errorSeverity;
+            return this;
+        }
+
+        public ServiceDefinitionBuilder WithDelayedAutoStart(bool delayedAutoStart)
+        {
+            DelayedAutoStart = delayedAutoStart;
             return this;
         }
     }

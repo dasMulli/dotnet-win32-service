@@ -49,6 +49,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
         private readonly Dictionary<string, string> serviceDescriptions = new Dictionary<string, string>();
         private readonly Dictionary<string, ServiceFailureActions> failureActions = new Dictionary<string, ServiceFailureActions>();
         private readonly Dictionary<string, bool> failureActionsFlags = new Dictionary<string, bool>();
+        private bool? delayedAutoStartInfoSetOnNativeInterop;
 
         public ServiceCreationTests()
         {
@@ -196,6 +197,47 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
             A.CallTo(() => nativeInterop.ChangeServiceConfig2W(A<ServiceHandle>._, A<ServiceConfigInfoTypeLevel>.That.Matches(level => level == ServiceConfigInfoTypeLevel.FailureActions), A<IntPtr>._)).MustNotHaveHappened();
         }
 
+        [Fact]
+        public void ItCanSetDelayedAutoStart()
+        {
+            // Given
+            GivenServiceCreationIsPossible(ServiceStartType.AutoStart);
+
+            // When
+            WhenATestServiceIsCreated(CreateTestServiceDefinitionBuilder().WithDelayedAutoStart(true).Build(), startImmediately: false);
+
+            // then
+            delayedAutoStartInfoSetOnNativeInterop.Should().Be(true);
+        }
+
+        [Fact]
+        public void ItDoesNotUnsetDelayedAutoStartOnCreation()
+        {
+            // Given
+            var handle = GivenServiceCreationIsPossible(ServiceStartType.AutoStart);
+
+            // When
+            WhenATestServiceIsCreated(CreateTestServiceDefinitionBuilder().WithDelayedAutoStart(false).Build(), startImmediately: false);
+
+            // then
+            delayedAutoStartInfoSetOnNativeInterop.Should().Be(null);
+            A.CallTo(()=>handle.SetDelayedAutoStartFlag(A<bool>._)).MustNotHaveHappened();
+        }
+
+        [Fact]
+        public void ItDoesNotSetDelayedAutoStartFlagWhenAutoStartIsDisabledOnCreation()
+        {
+            // Given
+            var handle = GivenServiceCreationIsPossible(ServiceStartType.StartOnDemand);
+
+            // When
+            WhenATestServiceIsCreated(CreateTestServiceDefinitionBuilder().WithAutoStart(false).WithDelayedAutoStart(true).Build(), startImmediately: false);
+
+            // then
+            delayedAutoStartInfoSetOnNativeInterop.Should().Be(null);
+            A.CallTo(() => handle.SetDelayedAutoStartFlag(A<bool>._)).MustNotHaveHappened();
+        }
+
         private void WhenATestServiceIsCreated(ServiceDefinition serviceDefinition, bool startImmediately)
         {
             sut.CreateService(serviceDefinition, startImmediately);
@@ -231,11 +273,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
                 {
                     var serviceName = (string)call.Arguments[argumentIndex: 1];
                     createdServices.Add(serviceName);
-                    A.CallTo(() => nativeInterop.ChangeServiceConfig2W(serviceHandle, ServiceConfigInfoTypeLevel.ServiceDescription, A<IntPtr>._))
-                        .ReturnsLazily(CreateChangeService2WHandler(serviceName));
-                    A.CallTo(() => nativeInterop.ChangeServiceConfig2W(serviceHandle, ServiceConfigInfoTypeLevel.FailureActions, A<IntPtr>._))
-                        .ReturnsLazily(CreateChangeService2WHandler(serviceName));
-                    A.CallTo(() => nativeInterop.ChangeServiceConfig2W(serviceHandle, ServiceConfigInfoTypeLevel.FailureActionsFlag, A<IntPtr>._))
+                    A.CallTo(() => nativeInterop.ChangeServiceConfig2W(serviceHandle, A<ServiceConfigInfoTypeLevel>._, A<IntPtr>._))
                         .ReturnsLazily(CreateChangeService2WHandler(serviceName));
                     return serviceHandle;
                 });
@@ -275,7 +313,15 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
                         failureActionsFlags[serviceName] = failureActionFlag.Flag;
                         return true;
                     case ServiceConfigInfoTypeLevel.DelayedAutoStartInfo:
-                        break;
+                        if (info != IntPtr.Zero)
+                        {
+                            delayedAutoStartInfoSetOnNativeInterop = Marshal.ReadInt32(info) > 0;
+                        }
+                        else
+                        {
+                            delayedAutoStartInfoSetOnNativeInterop = null;
+                        }
+                        return true;
                     case ServiceConfigInfoTypeLevel.ServiceSidInfo:
                         break;
                     case ServiceConfigInfoTypeLevel.RequiredPrivilegesInfo:

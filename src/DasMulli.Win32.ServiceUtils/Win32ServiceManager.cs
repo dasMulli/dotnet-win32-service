@@ -78,6 +78,11 @@ namespace DasMulli.Win32.ServiceUtils
                     svc.SetFailureActions(serviceFailureActions);
                     svc.SetFailureActionFlag(serviceDefinition.FailureActionsOnNonCrashFailures);
                 }
+                
+                if (serviceDefinition.AutoStart && serviceDefinition.DelayedAutoStart)
+                {
+                    svc.SetDelayedAutoStartFlag(true);
+                }
 
                 if (startImmediately)
                 {
@@ -129,6 +134,7 @@ namespace DasMulli.Win32.ServiceUtils
             existingService.SetDescription(serviceDefinition.Description);
             existingService.SetFailureActions(serviceDefinition.FailureActions);
             existingService.SetFailureActionFlag(serviceDefinition.FailureActionsOnNonCrashFailures);
+            existingService.SetDelayedAutoStartFlag(serviceDefinition.AutoStart && serviceDefinition.DelayedAutoStart);
             if (startIfNotRunning)
             {
                 existingService.Start(throwIfAlreadyRunning: false);

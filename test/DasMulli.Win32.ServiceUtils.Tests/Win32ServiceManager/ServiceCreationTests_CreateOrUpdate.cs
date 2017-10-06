@@ -141,6 +141,50 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
         }
 
         [Fact]
+        public void ItCanSetDelayedAutoStartOnCreateOrUpdate()
+        {
+            // Given
+            GivenAServiceDoesNotExist(TestServiceName);
+            GivenServiceCreationIsPossible(ServiceStartType.AutoStart);
+
+            // When
+            WhenATestServiceIsCreatedOrUpdated(CreateTestServiceDefinitionBuilder().WithDelayedAutoStart(true).Build(), startImmediately: false);
+
+            // then
+            delayedAutoStartInfoSetOnNativeInterop.Should().Be(true);
+        }
+
+        [Fact]
+        public void ItDoesNotUnsetDelayedAutoStartOnCreationInCreateOrUpdate()
+        {
+            // Given
+            GivenAServiceDoesNotExist(TestServiceName);
+            var handle = GivenServiceCreationIsPossible(ServiceStartType.AutoStart);
+
+            // When
+            WhenATestServiceIsCreatedOrUpdated(CreateTestServiceDefinitionBuilder().WithDelayedAutoStart(false).Build(), startImmediately: false);
+
+            // then
+            delayedAutoStartInfoSetOnNativeInterop.Should().Be(null);
+            A.CallTo(() => handle.SetDelayedAutoStartFlag(A<bool>._)).MustNotHaveHappened();
+        }
+
+        [Fact]
+        public void ItDoesNotSetDelayedAutoStartFlagWhenAutoStartIsDisabledOnCreateOrUpdate()
+        {
+            // Given
+            GivenAServiceDoesNotExist(TestServiceName);
+            var handle = GivenServiceCreationIsPossible(ServiceStartType.StartOnDemand);
+
+            // When
+            WhenATestServiceIsCreatedOrUpdated(CreateTestServiceDefinitionBuilder().WithAutoStart(false).WithDelayedAutoStart(true).Build(), startImmediately: false);
+
+            // then
+            delayedAutoStartInfoSetOnNativeInterop.Should().Be(null);
+            A.CallTo(() => handle.SetDelayedAutoStartFlag(A<bool>._)).MustNotHaveHappened();
+        }
+
+        [Fact]
         public void ItThrowsUnexpectedWin32ExceptionFromTryingToOpenServiceOnCreateOrUpdate()
         {
             // Given
