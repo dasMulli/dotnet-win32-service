@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -76,6 +77,11 @@ namespace DasMulli.Win32.ServiceUtils
             serviceControlHandlerDelegate = HandleServiceControlCommand;
         }
 
+        [Obsolete("Doesn't really work when used in an async continuation on a background thread due to windows API requirements. Use Run() from the main thread instead (blocking).")]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+#if NETSTANDARD2_0
+        [Browsable(false)]
+#endif
         public Task<int> RunAsync()
         {
             var serviceTable = new ServiceTableEntry[2]; // second one is null/null to indicate termination
@@ -101,7 +107,10 @@ namespace DasMulli.Win32.ServiceUtils
 
         public int Run()
         {
+            // quick workaround to get the obsoletion of RunAsync() out fast
+            #pragma warning disable 0618
             return RunAsync().Result;
+            #pragma warning restore 0618
         }
 
         private void ServiceMainFunction(int numArgs, IntPtr argPtrPtr)
