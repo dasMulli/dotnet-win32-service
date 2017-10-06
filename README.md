@@ -88,6 +88,8 @@ If you want to get rid of it again, use:
 You can also create a service that registers itself like the example provided by
 taking a look at [the sample source](./samples/TestService/Program.cs).
 
+Also take a look at the [ASP.NET Core MVC sample](./samples/MvcTestService), which has additional logic to set the correct working directory.
+
 ## Limitations
 
 * No custom exceptions / error codes. Everything will throw a `Win32Exception` if something goes wrong (It's message should be
