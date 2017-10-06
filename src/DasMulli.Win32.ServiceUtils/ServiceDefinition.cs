@@ -17,6 +17,7 @@ namespace DasMulli.Win32.ServiceUtils
         public bool FailureActionsOnNonCrashFailures { get; set; }
         public bool AutoStart { get; set; } = true;
         public ErrorSeverity ErrorSeverity { get; set; } = ErrorSeverity.Normal;
+        public bool DelayedAutoStart { get; set; }
 
         public ServiceDefinition(string serviceName, string binPath)
         {

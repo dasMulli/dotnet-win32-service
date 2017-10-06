@@ -135,5 +135,15 @@ namespace DasMulli.Win32.ServiceUtils
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
         }
+
+        public virtual unsafe void SetDelayedAutoStartFlag(bool delayedAutoStart)
+        {
+            int value = delayedAutoStart ? 1 : 0;
+            var success = NativeInterop.ChangeServiceConfig2W(this, ServiceConfigInfoTypeLevel.DelayedAutoStartInfo, new IntPtr(&value));
+            if (!success)
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+        }
     }
 }

@@ -45,6 +45,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
 
         private readonly INativeInterop nativeInterop = A.Fake<INativeInterop>();
         private readonly ServiceControlManager serviceControlManager;
+        private bool? delayedAutoStartInfoSetOnNativeInterop;
 
         private readonly ServiceUtils.Win32ServiceManager sut;
 
@@ -124,6 +125,23 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
             action.ShouldThrow<Win32Exception>();
         }
 
+        [Theory]
+        [InlineData(true, true, true)]
+        [InlineData(true, false, false)]
+        [InlineData(false, true, false)]
+        [InlineData(false, false, false)]
+        public void ItUpdatesDelayedAutoStartFlag(bool autoStart, bool delayedAutoStartFlag, bool expectedSetFlag)
+        {
+            // Given
+            GivenAServiceExists(TestServiceName, canBeUpdated: true);
+
+            // When
+            WhenATestServiceIsCreatedOrUpdated(CreateTestServiceDefinitionBuilder().WithAutoStart(autoStart).WithDelayedAutoStart(delayedAutoStartFlag).Build(), startImmediately: false);
+
+            // then
+            delayedAutoStartInfoSetOnNativeInterop.Should().Be(expectedSetFlag);
+        }
+
         [Fact]
         public void ItCanStartAServiceAfterChangingIt()
         {
@@ -172,6 +190,19 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceManager
                     .Returns(value: true);
                 A.CallTo(() => nativeInterop.ChangeServiceConfig2W(serviceHandle, ServiceConfigInfoTypeLevel.FailureActionsFlag, A<IntPtr>._))
                     .Returns(value: true);
+                A.CallTo(() => nativeInterop.ChangeServiceConfig2W(serviceHandle, ServiceConfigInfoTypeLevel.DelayedAutoStartInfo, A<IntPtr>._))
+                    .ReturnsLazily((ServiceHandle handle, ServiceConfigInfoTypeLevel infoLevel, IntPtr info) =>
+                    {
+                        if (info != IntPtr.Zero)
+                        {
+                            delayedAutoStartInfoSetOnNativeInterop = Marshal.ReadInt32(info) > 0;
+                        }
+                        else
+                        {
+                            delayedAutoStartInfoSetOnNativeInterop = null;
+                        }
+                        return true;
+                    });
 
                 A.CallTo(() => nativeInterop.StartServiceW(serviceHandle, A<uint>._, A<IntPtr>._))
                     .Returns(value: true);
