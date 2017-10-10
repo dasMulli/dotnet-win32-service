@@ -89,6 +89,9 @@ You can also create a service that registers itself like the example provided by
 taking a look at [the sample source](./samples/TestService/Program.cs).
 
 Also take a look at the [ASP.NET Core MVC sample](./samples/MvcTestService), which has additional logic to set the correct working directory.
+When running it in development and not from the published output, be sure to pass `--preserve-working-directory` to it when registering
+so that it will run from the project directory (e.g. run `dotnet run --register-service --preserve-working-directory` from and administrative
+command prompt).
 
 ## Limitations
 
