@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
 using Xunit;
+using System.Threading;
 
 namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceHost
 {
@@ -25,6 +26,10 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceHost
         private ServiceControlHandler serviceControlHandler;
         private IntPtr serviceControlContext;
         private readonly ServiceUtils.Win32ServiceHost sut;
+        private EventWaitHandle serviceStoppedEvent = new EventWaitHandle(false, EventResetMode.ManualReset);
+        private bool doNotBlockAfterServiceMainFunction;
+        private EventWaitHandle serviceMainFunctionExitedEvent = new EventWaitHandle(false, EventResetMode.ManualReset);
+        private EventWaitHandle backroundRunCompletedEvent = new EventWaitHandle(false, EventResetMode.ManualReset);
 
         public ServiceLifecycleTests()
         {
@@ -43,6 +48,10 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceHost
                     if (handle == serviceStatusHandle)
                     {
                         reportedServiceStatuses.Add(status);
+                        if (status.State == ServiceState.Stopped)
+                        {
+                            serviceStoppedEvent.Set();
+                        }
                     }
                     return new object[] {status};
                 });
@@ -57,7 +66,8 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceHost
             GivenServiceControlManagerIsExpectingService();
 
             // When
-            sut.RunAsync();
+            doNotBlockAfterServiceMainFunction = true;
+            sut.Run();
 
             // Then
             A.CallTo(() => serviceStateMachine.OnStart(A<string[]>.That.IsSameSequenceAs(TestServiceStartupArguments), A<ServiceStatusReportCallback>.Ignored))
@@ -69,6 +79,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceHost
         public void ItCanStopServicesWhenRequestedByOS()
         {
             // Given
+            doNotBlockAfterServiceMainFunction = true;
             GivenTheServiceHasBeenStarted();
 
             // When
@@ -87,6 +98,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceHost
 
             // When the service implementation reports stopped via callback
             statusReportCallback(ServiceState.Stopped, ServiceAcceptedControlCommandsFlags.None, win32ExitCode: 123, waitHint: 0);
+            backroundRunCompletedEvent.WaitOne(10000);
 
             // Then
             runTask.IsCompleted.Should().BeTrue();
@@ -101,11 +113,10 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceHost
             GivenTheStateMachineStartupCodeIsFaulty();
 
             // When
-            var runTask = sut.RunAsync();
+            int returnValue = sut.Run();
 
             // Then
-            runTask.IsCompleted.Should().BeTrue();
-            runTask.Result.Should().Be(expected: -1);
+            returnValue.Should().Be(expected: -1);
             reportedServiceStatuses.Should().HaveCount(expected: 2);
             reportedServiceStatuses[index: 0].State.Should().Be(ServiceState.StartPending);
             reportedServiceStatuses[index: 1].State.Should().Be(ServiceState.Stopped);
@@ -121,6 +132,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceHost
             // When
             statusReportCallback(ServiceState.Stopped, ServiceAcceptedControlCommandsFlags.None, win32ExitCode: 123, waitHint: 0);
             statusReportCallback(ServiceState.Running, ServiceAcceptedControlCommandsFlags.None, win32ExitCode: 123, waitHint: 0);
+            backroundRunCompletedEvent.WaitOne(10000);
 
             // Then
             reportedServiceStatuses.Last().State.Should().Be(ServiceState.Stopped);
@@ -134,7 +146,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceHost
             A.CallTo(nativeInterop).Throws<DllNotFoundException>();
 
             // When
-            Func<Task<int>> when = sut.RunAsync;
+            Action when = () => sut.Run();
 
             // Then
             when.ShouldThrow<PlatformNotSupportedException>();
@@ -147,7 +159,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceHost
             GivenStartingServiceControlDispatcherIsImpossible();
 
             // When
-            Func<Task<int>> when = sut.RunAsync;
+            Action when = () => sut.Run();
 
             // Then
             when.ShouldThrow<Win32Exception>();
@@ -160,7 +172,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceHost
             GivenRegisteringServiceControlHandlerIsImpossible();
 
             // When
-            Func<Task<int>> when = sut.RunAsync;
+            Action when = () => sut.Run();
 
             // Then
             when.ShouldThrow<Win32Exception>();
@@ -175,7 +187,9 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceHost
         private Task<int> GivenTheServiceHasBeenStarted()
         {
             GivenServiceControlManagerIsExpectingService();
-            return sut.RunAsync();
+            var task = RunInBackground();
+            serviceMainFunctionExitedEvent.WaitOne(10000);
+            return task;
         }
 
         private void GivenServiceControlManagerIsExpectingService()
@@ -204,6 +218,13 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceHost
             var task = GivenTheServiceHasBeenStarted();
             WhenTheOSSendsControlCommand(ServiceControlCommand.Stop, commandSpecificEventType: 0);
             return task;
+        }
+
+        private Task<int> RunInBackground()
+        {
+            var runTask = Task.Factory.StartNew(sut.Run);
+            runTask.ContinueWith(_ => backroundRunCompletedEvent.Set());
+            return runTask;
         }
 
         private void GivenStartingServiceControlDispatcherIsImpossible()
@@ -251,6 +272,13 @@ namespace DasMulli.Win32.ServiceUtils.Tests.Win32ServiceHost
                 {
                     Marshal.FreeHGlobal(ptr);
                 }
+            }
+
+            serviceMainFunctionExitedEvent.Set();
+
+            if (!doNotBlockAfterServiceMainFunction && reportedServiceStatuses.Any(s => s.State != ServiceState.Stopped))
+            {
+                serviceStoppedEvent.WaitOne(10000); // 10 sec test timeout
             }
         }
     }
