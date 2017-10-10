@@ -11,27 +11,17 @@ configuration: Release
 nuget:
   disable_publish_on_pr: true
 before_build:
-- ps: >-
-    $cc = (git rev-list --count HEAD)
-
-    $env:GIT_COMMIT_COUNT = [System.Int32]::Parse($cc).ToString("D6", [System.Globalization.CultureInfo]::InvariantCulture)
-
-    $env:PackageVersionSuffix = $ENV:APPVEYOR_REPO_BRANCH + "-" + $env:GIT_COMMIT_COUNT
-
-    Write-Host "Building with suffix " $env:PackageVersionSuffix
-
-    & dotnet restore
+- cmd: >-
+    dotnet restore
 build:
-  publish_nuget: true
-  publish_nuget_symbols: true
   verbosity: normal
 before_package:
 - cmd: >-
-    dotnet pack src/DasMulli.Win32.ServiceUtils/DasMulli.Win32.ServiceUtils.csproj -c Release --version-suffix %PackageVersionSuffix%
+    dotnet pack src/DasMulli.Win32.ServiceUtils/DasMulli.Win32.ServiceUtils.csproj -c Release --include-symbols
 
     dotnet clean -c Release
 
-    dotnet pack src/DasMulli.Win32.ServiceUtils/DasMulli.Win32.ServiceUtils.csproj -c Release
+    dotnet pack src/DasMulli.Win32.ServiceUtils/DasMulli.Win32.ServiceUtils.csproj --force -c Release --include-symbols /p:DisableGitVersionSuffix=true
 test_script:
 - cmd: dotnet test test\DasMulli.Win32.ServiceUtils.Tests\DasMulli.Win32.ServiceUtils.Tests.csproj -c %CONFIGURATION%
 artifacts:

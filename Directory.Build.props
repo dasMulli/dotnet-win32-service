@@ -6,7 +6,11 @@
 
   <PropertyGroup>
     <VersionPrefix>1.1.0</VersionPrefix>
-    <VersionSuffix Condition=" '$(Configuration)' == 'Debug' ">dev</VersionSuffix>
+    <GitCommitCountPadLength>3</GitCommitCountPadLength>
   </PropertyGroup>
+
+  <ItemGroup>
+    <GitBranchToReleaseLabelMapping Include="master" ReleaseLabel="rc" />
+  </ItemGroup>
 
 </Project>
