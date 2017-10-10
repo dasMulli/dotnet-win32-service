@@ -23,7 +23,8 @@ namespace DasMulli.Win32.ServiceUtils
 
         private ServiceStatusHandle serviceStatusHandle;
 
-        private readonly TaskCompletionSource<int> stopTaskCompletionSource = new TaskCompletionSource<int>();
+        private int resultCode;
+        private Exception resultException;
 
         public Win32ServiceHost([NotNull] IWin32Service service)
             : this(service, Win32Interop.Wrapper)
@@ -82,7 +83,9 @@ namespace DasMulli.Win32.ServiceUtils
 #if NETSTANDARD2_0
         [Browsable(false)]
 #endif
-        public Task<int> RunAsync()
+        public Task<int> RunAsync() => Task.FromResult(Run());
+
+        public int Run()
         {
             var serviceTable = new ServiceTableEntry[2]; // second one is null/null to indicate termination
             serviceTable[0].serviceName = serviceName;
@@ -90,7 +93,9 @@ namespace DasMulli.Win32.ServiceUtils
 
             try
             {
-                // StartServiceCtrlDispatcherW call returns when ServiceMainFunction exits
+                // StartServiceCtrlDispatcherW call returns when ServiceMainFunction has exited and all services have stopped
+                // at least this is what's documented even though linked c++ sample has an additional stop event
+                // to let the service main function dispatched to block until the service stops.
                 if (!nativeInterop.StartServiceCtrlDispatcherW(serviceTable))
                 {
                     throw new Win32Exception(Marshal.GetLastWin32Error());
@@ -102,15 +107,12 @@ namespace DasMulli.Win32.ServiceUtils
                     dllException);
             }
 
-            return stopTaskCompletionSource.Task;
-        }
+            if (resultException != null)
+            {
+                throw resultException;
+            }
 
-        public int Run()
-        {
-            // quick workaround to get the obsoletion of RunAsync() out fast
-            #pragma warning disable 0618
-            return RunAsync().Result;
-            #pragma warning restore 0618
+            return resultCode;
         }
 
         private void ServiceMainFunction(int numArgs, IntPtr argPtrPtr)
@@ -121,7 +123,7 @@ namespace DasMulli.Win32.ServiceUtils
 
             if (serviceStatusHandle.IsInvalid)
             {
-                stopTaskCompletionSource.SetException(new Win32Exception(Marshal.GetLastWin32Error()));
+                resultException = new Win32Exception(Marshal.GetLastWin32Error());
                 return;
             }
 
@@ -159,12 +161,12 @@ namespace DasMulli.Win32.ServiceUtils
                 ? 0 // MSDN: This value is not valid and should be zero when the service does not have a start, stop, pause, or continue operation pending.
                 : checkpointCounter++;
 
-            nativeInterop.SetServiceStatus(serviceStatusHandle, ref serviceStatus);
-
             if (state == ServiceState.Stopped)
             {
-                stopTaskCompletionSource.TrySetResult(win32ExitCode);
+                resultCode = win32ExitCode;
             }
+
+            nativeInterop.SetServiceStatus(serviceStatusHandle, ref serviceStatus);
         }
 
         private void HandleServiceControlCommand(ServiceControlCommand command, uint eventType, IntPtr eventData, IntPtr eventContext)
