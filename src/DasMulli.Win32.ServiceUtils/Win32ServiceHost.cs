@@ -37,14 +37,10 @@ namespace DasMulli.Win32.ServiceUtils
             {
                 throw new ArgumentNullException(nameof(service));
             }
-            if (nativeInterop == null)
-            {
-                throw new ArgumentNullException(nameof(nativeInterop));
-            }
 
+            this.nativeInterop = nativeInterop ?? throw new ArgumentNullException(nameof(nativeInterop));
             serviceName = service.ServiceName;
             stateMachine = new SimpleServiceStateMachine(service);
-            this.nativeInterop = nativeInterop;
 
             serviceMainFunctionDelegate = ServiceMainFunction;
             serviceControlHandlerDelegate = HandleServiceControlCommand;
@@ -57,22 +53,9 @@ namespace DasMulli.Win32.ServiceUtils
 
         internal Win32ServiceHost([NotNull] string serviceName, [NotNull] IWin32ServiceStateMachine stateMachine, [NotNull] INativeInterop nativeInterop)
         {
-            if (serviceName == null)
-            {
-                throw new ArgumentNullException(nameof(serviceName));
-            }
-            if (stateMachine == null)
-            {
-                throw new ArgumentNullException(nameof(stateMachine));
-            }
-            if (nativeInterop == null)
-            {
-                throw new ArgumentNullException(nameof(nativeInterop));
-            }
-
-            this.serviceName = serviceName;
-            this.stateMachine = stateMachine;
-            this.nativeInterop = nativeInterop;
+            this.serviceName = serviceName ?? throw new ArgumentNullException(nameof(serviceName));
+            this.stateMachine = stateMachine ?? throw new ArgumentNullException(nameof(stateMachine));
+            this.nativeInterop = nativeInterop ?? throw new ArgumentNullException(nameof(nativeInterop));
 
             serviceMainFunctionDelegate = ServiceMainFunction;
             serviceControlHandlerDelegate = HandleServiceControlCommand;
