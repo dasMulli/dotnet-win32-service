@@ -1,0 +1,155 @@
+<Project>
+  <PropertyGroup>
+    <UseCompatGitVersion Condition=" '$(UseCompatGitVersion)' == '' ">true</UseCompatGitVersion>
+    <DisableGitVersionSuffix Condition=" '$(DisableGitVersionSuffix)' == '' ">false</DisableGitVersionSuffix>
+    <IncludeBranchInGitVersion Condition=" '$(IncludeBranchInGitVersion)' == '' ">true</IncludeBranchInGitVersion>
+    <GitCommitCountPadLength Condition=" '$(GitCommitCountPadLength)' == '' ">7</GitCommitCountPadLength>
+    <GenerateNuspecDependsOn>CreateGitVersionSuffix;$(GenerateNuspecDependsOn)</GenerateNuspecDependsOn>
+  </PropertyGroup> 
+
+  <!--
+    ========================================================================================================================
+                                                    CreateGitVersionSuffix
+    
+    Hooks before PrepareForBuild target to read git metadata to update VersionSuffix, Version and PackageVersion accordingly.
+    Parameters:
+       (Examples are based on VersionPrefix == '1.0.0' and commit nr. 23 on branch 'master')
+    DisableGitVersionSuffix:
+        Setting this to 'true' will cause the whole target to skip.
+        
+    UseCompatGitVersion (default: true): 
+        Set to 'false' to use Semver 2.0.0 separation of release labels.
+        This will trigger a NuGet warning on build saying that the version will not be supported on legacy NuGet clients,
+        but if you want true SemVer 2.0.0 versions, this is your option.
+        With UseCompatGitVersion == 'true' (default):
+        1.0.0-master-0000023
+        With UseCompatGitVersion == 'false':
+        1.0.0-master.23
+        
+    IncludeBranchInGitVersion:
+        Set to 'false' to omit adding the branch name to the version.
+        With IncludeBranchInGitVersion == 'true' (default):
+        1.0.0-master-0000023
+        With IncludeBranchInGitVersion == 'false':
+        1.0.0-0000023
+    GitCommitCountPadLength:
+        Number of (minimum) characters to use for the git commit count.
+        The git commit count will be padded with leading zeros (0) to reach this length.
+        Defaults to 7.
+        
+    VersionSuffix:
+        Any preexisting version suffix will be considered and the git information will be added to it:
+        With VersionSuffix == 'alpha':
+          * And IncludeBranchInGitVersion == 'true' (default):
+            1.0.0-alpha-master-0000023
+          * And IncludeBranchInGitVersion == 'false':
+            1.0.0-alpha-0000023
+    GitBranchName:
+      If already set, this will be the name to used as current git branch name.
+      If not set, this will be determined via git rev-parse
+    
+    Items:
+    GitBranchToReleaseLabelMapping:
+        The target will respect 'GitBranchToReleaseLabelMapping' items to map known branches to release labels.
+        This is useful if you don't want the branch names to end up in the verions, but specific names for specific branches.
+        (Think of it as a branch name replacement dictionary).
+        Example: Project contains:
+          <ItemGroup>
+            <GitBranchToReleaseLabelMapping Include="master" ReleaseLabel="rc" />
+            <GitBranchToReleaseLabelMapping Include="develop" ReleaseLabel="beta" />
+          </ItemGroup>
+        
+        When built from the master branch, will result in version:
+          1.0.0-rc-0000023
+          
+    Outputs / Properties Set:
+    
+    GitBranchName:
+        Will contain the current branch name - e.g. 'master' or 'feature/awesome'
+        
+    GitBranchNameSanitized:
+        Will contain the branch name having slashes been replaced with underscores so that the name can be used for versioning.
+        (Note: SemVer would require more sanitizing but slashes are the most important blockers.
+               Just don't use emojis in a branch name..)
+    
+    GitCommitCount:
+        Contians the number of commits on the current branch. Can be used for SemVer 2.0.0 versioning.
+        
+    GitCommitCountPadded:
+        Same as GitCommitCount, but extended to 7 characters with leading zeros. This is needed for
+        SemVer 1.0.0 compatible versioning which is purely alphanumeric and doesn't support multiple lables.
+        See the examples for UseCompatGitVersion.
+        
+    GitVersionInfo:
+        Contains all relevant parts of branch / commit count info that will be used for versoining.
+    
+    GitVersionPrefix:
+        What the target will use to calculate the prefix part of the Version property. Defaults to VersionPrefix if not Set
+        or will default to Version if no VersionPrefix is defined. This may only be useful if a full Version is specified.
+        E.g. having Version == '1.0.0-rc1' without VersionPrefix or VersionSuffix being defined will still result in a
+        working version: '1.0.0-rc1-master-0000023'
+        
+    Version:
+        The Version property will be updated with appended git infos.
+        
+    PackageVersion:
+        Will be set to Version so that git status will also affect the version of generated nuget packages.
+ 
+    ========================================================================================================================
+    -->
+  <Target Name="CreateGitVersionSuffix" BeforeTargets="Restore;_GenerateRestoreProjectSpec;CollectPackageReferences;PrepareForBuild" Condition=" '$(DisableGitVersionSuffix)' != 'true' ">
+    <Error Text="This project is only supported for use with .NET SDK based projects." Condition=" $(MSBuildAllProjects.Contains('Microsoft.NET.Sdk')) != 'true' " />
+    <Error Text="GitBranchToReleaseLabelMapping item '%(GitBranchToReleaseLabelMapping.Identity)' does not have a ReleaseLabel metadata"
+           Condition=" @(GitBranchToReleaseLabelMapping) != '' and '%(GitBranchToReleaseLabelMapping.ReleaseLabel)' == '' " />
+
+    <Exec Command="git rev-parse --abbrev-ref HEAD" ConsoleToMSBuild="true" StandardOutputImportance="low" Condition="'$(GitBranchName)' == ''">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitBranchName" />
+    </Exec>
+
+    <Exec Command="git rev-list --count HEAD" ConsoleToMSBuild="true" StandardOutputImportance="low">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitCommitCount" />
+    </Exec>
+
+    <!-- If no abbreviation for the HEAD is found, this is probably a CI build so look for CI build variables -->
+    <PropertyGroup Condition=" '$(GitBranchName)' == 'HEAD' ">
+      <!-- VSTS / TFS -->
+      <GitBranchName Condition=" '$(BUILD_SOURCEBRANCHNAME)' != '' ">$(BUILD_SOURCEBRANCHNAME)</GitBranchName>
+      <!-- AppVeyor (PR target branch wins) -->
+      <GitBranchName Condition=" '$(APPVEYOR_REPO_BRANCH)' != '' ">$(APPVEYOR_REPO_BRANCH)</GitBranchName>
+      <!-- Travis CI (PR source wins) -->
+      <GitBranchName Condition=" '$(TRAVIS_BRANCH)' != '' ">$(TRAVIS_BRANCH)</GitBranchName>
+      <GitBranchName Condition=" '$(TRAVIS_PULL_REQUEST_BRANCH)' != '' ">$(TRAVIS_PULL_REQUEST_BRANCH)</GitBranchName>
+      <!-- Circle CI -->
+      <GitBranchName Condition=" '$(CIRCLE_BRANCH)' != '' ">$(CIRCLE_BRANCH)</GitBranchName>
+      <!-- TeamCity: can't really do much since you'd need to know the VCS configuration to know which property to look for -->
+    </PropertyGroup>
+
+    <PropertyGroup>
+      <GitBranchNameSanitized>$(GitBranchName.Replace('/','-'))</GitBranchNameSanitized>
+      <GitCommitCountPadded>$(GitCommitCount.PadLeft($(GitCommitCountPadLength), '0'))</GitCommitCountPadded>
+
+      <UseCompatGitVersion Condition=" '$(UseCompatGitVersion)' == '' ">true</UseCompatGitVersion>
+
+      <_GitBranchReleaseLabel Condition=" '%(GitBranchToReleaseLabelMapping.Identity)' == '$(GitBranchName)' ">%(GitBranchToReleaseLabelMapping.ReleaseLabel)</_GitBranchReleaseLabel>
+      <_GitBranchReleaseLabel Condition=" '$(_GitBranchReleaseLabel)' == '' ">$(GitBranchNameSanitized)</_GitBranchReleaseLabel>
+
+      <_GitCommitCountInVersion Condition=" '$(_GitCommitCountInVersion)' == '' and '$(UseCompatGitVersion)' == 'true' ">$(GitCommitCountPadded)</_GitCommitCountInVersion>
+      <_GitCommitCountInVersion Condition=" '$(_GitCommitCountInVersion)' == '' ">$(GitCommitCount)</_GitCommitCountInVersion>
+
+      <_GitVersionPartSeparator Condition=" '$(_GitVersionPartSeparator)' == '' and '$(UseCompatGitVersion)' == 'true' ">-</_GitVersionPartSeparator>
+      <_GitVersionPartSeparator Condition=" '$(_GitVersionPartSeparator)' == '' ">.</_GitVersionPartSeparator>
+
+      <GitVersionInfo Condition=" '$(GitVersionInfo)' == '' and '$(IncludeBranchInGitVersion)' == 'false' ">$(_GitCommitCountInVersion)</GitVersionInfo>
+      <GitVersionInfo Condition=" '$(GitVersionInfo)' == '' ">$(_GitBranchReleaseLabel)$(_GitVersionPartSeparator)$(_GitCommitCountInVersion)</GitVersionInfo>
+
+      <VersionSuffix Condition=" '$(VersionSuffix)' != '' ">$(VersionSuffix)$(_GitVersionPartSeparator)$(GitVersionInfo)</VersionSuffix>
+      <VersionSuffix Condition=" '$(VersionSuffix)' == '' ">$(GitVersionInfo)</VersionSuffix>
+
+      <GitVersionPrefix Condition=" '$(GitVersionPrefix)' == '' and '$(VersionPrefix)' == '' ">$(Version)</GitVersionPrefix>
+      <GitVersionPrefix Condition=" '$(GitVersionPrefix)' == '' ">$(VersionPrefix)</GitVersionPrefix>
+
+      <Version>$(GitVersionPrefix)-$(VersionSuffix)</Version>
+      <PackageVersion>$(Version)</PackageVersion>
+    </PropertyGroup>
+  </Target>
+</Project>
