@@ -6,9 +6,9 @@ namespace DasMulli.Win32.ServiceUtils
 {
     /// <summary>
     /// Simplifies the work of hashing.
-    /// Taken from <see cref="https://rehansaeed.com/gethashcode-made-easy/"/>, and modified with Reshaper
+    /// Taken from https://rehansaeed.com/gethashcode-made-easy/", and modified with Reshaper
     /// </summary>
-    public struct HashCode
+    internal struct HashCode
     {
         private readonly int value;
         private HashCode(int value)

@@ -8,6 +8,10 @@ using JetBrains.Annotations;
 namespace DasMulli.Win32.ServiceUtils
 {
     // This implementation is roughly based on https://msdn.microsoft.com/en-us/library/bb540475(v=vs.85).aspx
+    /// <summary>
+    /// Runs windows services as requested by windows' service management.
+    /// Use this class as a replacement for ServiceBase.Run()
+    /// </summary>
     [PublicAPI]
     public sealed class Win32ServiceHost
     {
@@ -26,6 +30,10 @@ namespace DasMulli.Win32.ServiceUtils
         private int resultCode;
         private Exception resultException;
 
+        /// <summary>
+        /// Initializes a new <see cref="Win32ServiceHost"/> to run the specified windows service implementation.
+        /// </summary>
+        /// <param name="service">The windows service implementation about to be run.</param>
         public Win32ServiceHost([NotNull] IWin32Service service)
             : this(service, Win32Interop.Wrapper)
         {
@@ -46,6 +54,11 @@ namespace DasMulli.Win32.ServiceUtils
             serviceControlHandlerDelegate = HandleServiceControlCommand;
         }
 
+        /// <summary>
+        /// Initializes a new <see cref="Win32ServiceHost"/> class to run an advanced service with custom state handling.
+        /// </summary>
+        /// <param name="serviceName">Name of the windows service.</param>
+        /// <param name="stateMachine">The custom service state machine implementation to use.</param>
         public Win32ServiceHost([NotNull] string serviceName, [NotNull] IWin32ServiceStateMachine stateMachine)
             : this(serviceName, stateMachine, Win32Interop.Wrapper)
         {
@@ -61,6 +74,11 @@ namespace DasMulli.Win32.ServiceUtils
             serviceControlHandlerDelegate = HandleServiceControlCommand;
         }
 
+        /// <summary>
+        /// Obsolete - pretends to run asynchronously.
+        /// Only exists for compatibility with 1.0 API
+        /// </summary>
+        /// <returns></returns>
         [Obsolete("Doesn't really work when used in an async continuation on a background thread due to windows API requirements. Use Run() from the main thread instead (blocking).")]
         [EditorBrowsable(EditorBrowsableState.Never)]
 #if NETSTANDARD2_0
@@ -68,6 +86,13 @@ namespace DasMulli.Win32.ServiceUtils
 #endif
         public Task<int> RunAsync() => Task.FromResult(Run());
 
+        /// <summary>
+        /// Runs the windows service that this instance was initialized with.
+        /// This method is inteded to be run from the application's main thread and will block until the service has stopped.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Win32Exception">Thrown when an exception ocurrs when communicating with windows' service system.</exception>
+        /// <exception cref="PlatformNotSupportedException">Thrown when run on a non-windows platform.</exception>
         public int Run()
         {
             var serviceTable = new ServiceTableEntry[2]; // second one is null/null to indicate termination
