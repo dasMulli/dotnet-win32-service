@@ -13,7 +13,7 @@ Usage scenarios include:
 
 ## How to use the example application
 Prerequisites:
-* .NET Core SDK 1.0.0 or higher (`.csproj` based tooling)
+* .NET Core SDK 2.0.3 or higher (`.csproj` based tooling)
 * Windows machine
 * **Elevated command prompt**: Run cmd as administrator.
 ```cmd
@@ -21,7 +21,7 @@ Prerequisites:
 > dotnet restore
 > dotnet run --register-service --urls http://*:5080
 ...
-Successfully registered and started service "Demo ASP.NET Core on .NET Core Service"
+Successfully registered and started service "Demo .NET Core Service" ("Demo ASP.NET Core Service running on .NET Core")
 ```
 Open `http://localhost:5080` in a browser. You should see `Hello world`.
 
@@ -32,7 +32,7 @@ The "Services" administrative tool should show the service:
 ```cmd
 > dotnet run --unregister-service
 ...
-Successfully unregistered service "Demo ASP.NET Core on .NET Core Service"
+Successfully unregistered service "Demo .NET Core Service" ("Demo ASP.NET Core Service running on .NET Core")
 ```
 Note that the service may show up as `disabled` for some time until all tools accessing the windows services apis have been closed.
 See this [Stackoverflow question](http://stackoverflow.com/questions/20561990/how-to-solve-the-specified-service-has-been-marked-for-deletion-error).
