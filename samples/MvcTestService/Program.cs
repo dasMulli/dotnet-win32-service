@@ -28,7 +28,7 @@ namespace MvcTestService
         private const string ServiceName = "DemoMvcService";
         private const string ServiceDisplayName = "Demo .NET Core MVC Service";
         private const string ServiceDescription = "Demo ASP.NET Core MVC Service running on .NET Core";
-        
+
         public static void Main(string[] args)
         {
             try
@@ -59,7 +59,7 @@ namespace MvcTestService
                 WriteLine($"An error ocurred: {ex.Message}");
             }
         }
-        
+
         private static void RunAsService(string[] args)
         {
             // easy fix to allow using default web host builder without changes
@@ -163,9 +163,19 @@ namespace MvcTestService
             return arg;
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        public static IWebHost BuildWebHost(string[] args)
+        {
+            /* 
+             * create an override configuration based on the command line args
+             * to work around ASP.NET Core issue https://github.com/aspnet/MetaPackages/issues/221
+             * wich should be fixed in 2.1.0.
+             */
+            var configuration = new ConfigurationBuilder().AddCommandLine(args).Build();
+
+            return WebHost.CreateDefaultBuilder(args)
+                .UseConfiguration(configuration)
                 .UseStartup<Startup>()
                 .Build();
+        }
     }
 }
