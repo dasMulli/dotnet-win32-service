@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.3' ">1.6.0</NetStandardImplicitPackageVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Description>Helper classes to set up and run as Win32 services without depending on full .NET Framework.</Description>
+    <PackageTags>windows;service;.net;core;netstandard</PackageTags>
+    <PackageProjectUrl>https://github.com/Trapov/dotnet-win32-service</PackageProjectUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <Authors>DmitryAfonin</Authors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DasMulli.Win32.ServiceUtils" Version="1.1.0"/>
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.0.1"/>
+  </ItemGroup>
+</Project>
