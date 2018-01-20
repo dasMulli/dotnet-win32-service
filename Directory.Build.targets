@@ -1,4 +1,9 @@
 <Project>
+
+  <Target Name="VSTestIfTestProject">
+    <CallTarget Targets="VSTest" Condition="'$(IsTestProject)' == 'true'" />
+  </Target>
+
   <PropertyGroup>
     <UseCompatGitVersion Condition=" '$(UseCompatGitVersion)' == '' ">true</UseCompatGitVersion>
     <DisableGitVersionSuffix Condition=" '$(DisableGitVersionSuffix)' == '' ">false</DisableGitVersionSuffix>
