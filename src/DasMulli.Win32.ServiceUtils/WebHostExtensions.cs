@@ -1,10 +1,14 @@
-﻿using System;
-using DasMulli.Win32.ServiceUtils;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AfoninDmitry.AspNetCore.Hosting.WindowsServices
+namespace DasMulli.Win32.ServiceUtils
 {
+    public static class WebHostExtensions
+    {
+        public static void RunAsService(this IWebHost webhost, string serviceName) =>
+            new Win32ServiceHost(new DummyService(webhost, serviceName)).Run();
+    }
+
     internal class DummyService : IWin32Service
     {
         private readonly IWebHost webHost;
@@ -16,7 +20,6 @@ namespace AfoninDmitry.AspNetCore.Hosting.WindowsServices
             this.ServiceName = serviceName;
             this.webHost = webHost;
         }
-
 
         public void Start(string[] startupArguments, ServiceStoppedCallback serviceStoppedCallback)
         {
