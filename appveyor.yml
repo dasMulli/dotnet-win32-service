@@ -17,11 +17,11 @@ build:
   verbosity: normal
 before_package:
 - cmd: >-
-    dotnet pack src/DasMulli.Win32.ServiceUtils/DasMulli.Win32.ServiceUtils.csproj -c Release --include-symbols
+    dotnet pack -c Release --include-symbols
 
     dotnet clean -c Release
 
-    dotnet pack src/DasMulli.Win32.ServiceUtils/DasMulli.Win32.ServiceUtils.csproj --force -c Release --include-symbols /p:DisableGitVersionSuffix=true
+    dotnet pack --force -c Release --include-symbols /p:DisableGitVersionSuffix=true
 test_script:
 - cmd: dotnet test test\DasMulli.Win32.ServiceUtils.Tests\DasMulli.Win32.ServiceUtils.Tests.csproj -c %CONFIGURATION%
 artifacts:
