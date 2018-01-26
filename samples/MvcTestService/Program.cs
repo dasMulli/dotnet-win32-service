@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using DasMulli.AspNetCore.Hosting.WindowsServices;
 using DasMulli.Win32.ServiceUtils;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-
 using static System.Console;
 
 namespace MvcTestService
@@ -35,6 +32,7 @@ namespace MvcTestService
             {
                 if (args.Contains(RunAsServiceFlag))
                 {
+                    args = args.Where(a => a != RunAsServiceFlag).ToArray();
                     RunAsService(args);
                 }
                 else if (args.Contains(RegisterServiceFlag))
@@ -68,23 +66,20 @@ namespace MvcTestService
             {
                 var workingDirectory = args[wdFlagIndex + 1];
                 Directory.SetCurrentDirectory(workingDirectory);
+                // remove the flat + argument from the args passed to the web host builder
+                args = args.Take(wdFlagIndex).Concat(args.Skip(wdFlagIndex + 2)).ToArray();
             }
             else
             {
                 Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location));
             }
-            var mvcService = new MvcTestWin32Service(args.Where(a => a != RunAsServiceFlag).ToArray());
-            var serviceHost = new Win32ServiceHost(mvcService);
-            serviceHost.Run();
+            
+            BuildWebHost(args).RunAsService(ServiceName);
         }
 
         private static void RunInteractive(string[] args)
         {
-            var mvcService = new MvcTestWin32Service(args.Where(a => a != InteractiveFlag).ToArray());
-            mvcService.Start(new string[0], () => { });
-            WriteLine("Running interactively, press enter to stop.");
-            ReadLine();
-            mvcService.Stop();
+            BuildWebHost(args.Where(a => a != InteractiveFlag).ToArray()).Run();
         }
 
         private static void RegisterService()

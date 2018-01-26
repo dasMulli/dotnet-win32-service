@@ -2,7 +2,25 @@
 
   <PropertyGroup>
     <VersionPrefix>1.1.1</VersionPrefix>
+    <AspNetExtensionsVersionPrefix>1.0.0</AspNetExtensionsVersionPrefix>
     <GitCommitCountPadLength>3</GitCommitCountPadLength>
+
+    <!--
+    Set this to true when asp.net cor extensions are built out of band.
+    This will be needed whenever a change is made to the extensions that don't need an update to the
+    service utils package.
+    It should be false for every other case.
+    Change if needed between releases
+    -->
+    <BuildAspNetExtensionsOutOfBand>true</BuildAspNetExtensionsOutOfBand>
+    <AspNetExtensionsServiceUtilsReferenceVersion>1.1.0</AspNetExtensionsServiceUtilsReferenceVersion>
+  </PropertyGroup>
+
+  <!-- NuGet related properties -->
+  <PropertyGroup>
+    <PackageProjectUrl>https://github.com/dasMulli/dotnet-win32-service</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/dasMulli/dotnet-win32-service/master/LICENSE</PackageLicenseUrl>
+    <Authors>Martin Andreas Ullrich</Authors>
   </PropertyGroup>
 
   <ItemGroup>
