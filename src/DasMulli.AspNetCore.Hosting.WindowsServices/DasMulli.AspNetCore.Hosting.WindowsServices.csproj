@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <VersionPrefix>$(AspNetExtensionsVersionPrefix)</VersionPrefix>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Description>Helper classes to host ASP.NET Core applications as Windows services.</Description>
+    <PackageTags>windows;service;.net;core;aspnet;netstandard</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" Version="11.1.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.0.1" />
+  </ItemGroup>
+
+  <Choose>
+    <When Condition="'$(BuildAspNetExtensionsOutOfBand)' == 'true'">
+      <ItemGroup>
+        <PackageReference Include="DasMulli.Win32.ServiceUtils" Version="$(AspNetExtensionsServiceUtilsReferenceVersion)" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <ProjectReference Include="..\DasMulli.Win32.ServiceUtils\DasMulli.Win32.ServiceUtils.csproj" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+
+</Project>

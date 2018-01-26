@@ -10,13 +10,10 @@
   <PropertyGroup>
     <Description>Helper classes to set up and run as Win32 services without depending on full .NET Framework.</Description>
     <PackageTags>windows;service;.net;core;netstandard</PackageTags>
-    <PackageProjectUrl>https://github.com/dasMulli/dotnet-win32-service</PackageProjectUrl>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/dasMulli/dotnet-win32-service/master/LICENSE</PackageLicenseUrl>
-    <Authors>Martin Andreas Ullrich</Authors>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="11.0.0" PrivateAssets="All" />
+    <PackageReference Include="JetBrains.Annotations" Version="11.1.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,12 +25,4 @@
     </AssemblyAttribute>
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.AspNetCore.Hosting">
-      <Version>2.0.1</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.3'">
-    <Compile Remove="WebHostExtensions.cs"/>
-  </ItemGroup>
 </Project>

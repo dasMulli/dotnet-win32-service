@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -24,6 +24,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DasMulli.Win32.ServiceUtils.Tests", "test\DasMulli.Win32.ServiceUtils.Tests\DasMulli.Win32.ServiceUtils.Tests.csproj", "{D8DA7086-1F54-4E38-8308-3FBD44E04513}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvcTestService", "samples\MvcTestService\MvcTestService.csproj", "{CB78045F-6C82-4F36-840F-8F4EC2D9223C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DasMulli.AspNetCore.Hosting.WindowsServices", "src\DasMulli.AspNetCore.Hosting.WindowsServices\DasMulli.AspNetCore.Hosting.WindowsServices.csproj", "{AAAB30DF-4231-4199-8A95-7128CA9DD082}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,6 +85,18 @@ Global
 		{CB78045F-6C82-4F36-840F-8F4EC2D9223C}.Release|x64.Build.0 = Release|Any CPU
 		{CB78045F-6C82-4F36-840F-8F4EC2D9223C}.Release|x86.ActiveCfg = Release|Any CPU
 		{CB78045F-6C82-4F36-840F-8F4EC2D9223C}.Release|x86.Build.0 = Release|Any CPU
+		{AAAB30DF-4231-4199-8A95-7128CA9DD082}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAAB30DF-4231-4199-8A95-7128CA9DD082}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAAB30DF-4231-4199-8A95-7128CA9DD082}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AAAB30DF-4231-4199-8A95-7128CA9DD082}.Debug|x64.Build.0 = Debug|Any CPU
+		{AAAB30DF-4231-4199-8A95-7128CA9DD082}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AAAB30DF-4231-4199-8A95-7128CA9DD082}.Debug|x86.Build.0 = Debug|Any CPU
+		{AAAB30DF-4231-4199-8A95-7128CA9DD082}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAAB30DF-4231-4199-8A95-7128CA9DD082}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAAB30DF-4231-4199-8A95-7128CA9DD082}.Release|x64.ActiveCfg = Release|Any CPU
+		{AAAB30DF-4231-4199-8A95-7128CA9DD082}.Release|x64.Build.0 = Release|Any CPU
+		{AAAB30DF-4231-4199-8A95-7128CA9DD082}.Release|x86.ActiveCfg = Release|Any CPU
+		{AAAB30DF-4231-4199-8A95-7128CA9DD082}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -92,6 +106,7 @@ Global
 		{EF3F265C-DD53-4BA8-866A-E894A8D99986} = {8F2E12E6-F921-4092-8BD1-0ABC4592AF60}
 		{D8DA7086-1F54-4E38-8308-3FBD44E04513} = {C5C8CC1D-0625-4FD7-9C23-8205288CED6C}
 		{CB78045F-6C82-4F36-840F-8F4EC2D9223C} = {89B4BC15-059F-4810-8839-D5AB3C069D03}
+		{AAAB30DF-4231-4199-8A95-7128CA9DD082} = {8F2E12E6-F921-4092-8BD1-0ABC4592AF60}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {56283F72-C848-4B7F-90C7-18CF6907EDED}
