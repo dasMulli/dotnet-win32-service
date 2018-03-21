@@ -92,6 +92,34 @@ namespace DasMulli.Win32.ServiceUtils.Tests
                 .MustHaveHappened();
         }
 
+        [Fact]
+        public void ItShallPauseImplementationAndReportPaused()
+        {
+            // Given
+            GivenTheServiceHasBeenStarted();
+
+            // When
+            sut.OnCommand(ServiceControlCommand.Pause, 0);
+
+            // Then
+            A.CallTo(() => serviceImplmentation.Pause()).MustHaveHappened();
+            A.CallTo(() => statusReportCallback(ServiceState.Paused, ServiceAcceptedControlCommandsFlags.PauseContinueStop, 0, 0)).MustHaveHappened();
+        }
+
+        [Fact]
+        public void ItShallContinueImplementationAndReportStarted()
+        {
+            // Given
+            GivenTheServiceHasBeenStarted();
+
+            // When
+            sut.OnCommand(ServiceControlCommand.Continue, 0);
+
+            // Then
+            A.CallTo(() => serviceImplmentation.Continue()).MustHaveHappened();
+            A.CallTo(() => statusReportCallback(ServiceState.Running, ServiceAcceptedControlCommandsFlags.PauseContinueStop, 0, 0)).MustHaveHappened();
+        }
+
         [Theory, MemberData(nameof(UnsupportedCommandExamples))]
         public void ItShallIgnoreUnsupportedCommands(ServiceControlCommand unsupportedCommand)
         {
@@ -125,8 +153,6 @@ namespace DasMulli.Win32.ServiceUtils.Tests
         {
             get
             {
-                yield return new object[] {ServiceControlCommand.Pause};
-                yield return new object[] {ServiceControlCommand.Continue};
                 yield return new object[] {ServiceControlCommand.Shutdown};
                 yield return new object[] {ServiceControlCommand.PowerEvent};
             }

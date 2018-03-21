@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DasMulli.Win32.ServiceUtils
 {
@@ -49,26 +50,39 @@ namespace DasMulli.Win32.ServiceUtils
         /// Called when a command was received from windows' service system.
         /// </summary>
         /// <param name="command">The received command.</param>
-        /// <param name="commandSpecificEventType">Type of the command specific event. See description of dwEventType at https://msdn.microsoft.com/en-us/library/windows/desktop/ms683241(v=vs.85).aspx</param>
+        /// <param name="commandSpecificEventType">Type of the command specific event. See description of dwEventType at https://msdn.microsoft.com/en-us/library/windows/desktop/ms685996(v=vs.85).aspx </param>
         public void OnCommand(ServiceControlCommand command, uint commandSpecificEventType)
         {
-            if (command == ServiceControlCommand.Stop)
+            switch (command)
             {
-                statusReportCallback(ServiceState.StopPending, ServiceAcceptedControlCommandsFlags.None, win32ExitCode: 0, waitHint: 3000);
-
-                var win32ExitCode = 0;
-
-                try
-                {
-                    serviceImplementation.Stop();
-                }
-                catch
-                {
-                    win32ExitCode = -1;
-                }
-
-                statusReportCallback(ServiceState.Stopped, ServiceAcceptedControlCommandsFlags.None, win32ExitCode, waitHint: 0);
+                case ServiceControlCommand.Stop:
+                    PerformAction(ServiceState.StopPending, ServiceState.Stopped, serviceImplementation.Stop, ServiceAcceptedControlCommandsFlags.None);
+                    break;
+                case ServiceControlCommand.Pause:
+                    PerformAction(ServiceState.PausePending, ServiceState.Paused, serviceImplementation.Pause, ServiceAcceptedControlCommandsFlags.PauseContinueStop);
+                    break;
+                case ServiceControlCommand.Continue:
+                    PerformAction(ServiceState.ContinuePending, ServiceState.Running, serviceImplementation.Continue, ServiceAcceptedControlCommandsFlags.PauseContinueStop);
+                    break;
             }
+        }
+
+        private void PerformAction(ServiceState pendingState, ServiceState completedState, Action serviceAction, ServiceAcceptedControlCommandsFlags allowedControlCommandsFlags)
+        {
+            statusReportCallback(pendingState, allowedControlCommandsFlags, win32ExitCode: 0, waitHint: 3000);
+
+            var win32ExitCode = 0;
+
+            try
+            {
+                serviceAction();
+            }
+            catch
+            {
+                win32ExitCode = -1;
+            }
+
+            statusReportCallback(completedState, allowedControlCommandsFlags, win32ExitCode, waitHint: 0);
         }
 
         private void HandleServiceImplementationStoppedOnItsOwn()

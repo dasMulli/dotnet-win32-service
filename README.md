@@ -69,6 +69,16 @@ class MyService : IWin32Service
     {
         // shut it down again
     }
+
+    public void Pause()
+    {
+        // pause it!
+    }
+
+    public void Continue()
+    {
+        // resume it!
+    }
 }
 ```
 
@@ -99,6 +109,6 @@ command prompt).
   interpretable on windows).
 * All exceptions thrown by the service implementation will cause the service host
   to report exit code -1 / 0xffffffff to the service control manager.
-* Currently, no direct support for services supporting pause and continue commands as well as other commands (power event, system shutdown)
+* Currently, no direct support for services supporting commands such as power event and system shutdown
   * However, consumers can now use `IWin32ServiceStateMachine` to implement custom behavior.
     Copy `SimpleServiceStateMachine` as a starting point to implement extended services.
