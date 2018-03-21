@@ -14,6 +14,10 @@
     <PackageTags>windows;service;.net;core;netstandard</PackageTags>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="11.1.0" PrivateAssets="All" />
   </ItemGroup>
