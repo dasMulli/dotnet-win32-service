@@ -30,15 +30,5 @@
         /// Stops the service.
         /// </summary>
         void Stop();
-
-        /// <summary>
-        /// Pauses the service.
-        /// </summary>
-        void Pause();
-
-        /// <summary>
-        /// Continues/Resumes the service.
-        /// </summary>
-        void Continue();
     }
 }

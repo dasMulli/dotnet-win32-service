@@ -7,21 +7,21 @@ using Xunit;
 namespace DasMulli.Win32.ServiceUtils.Tests
 {
     [SuppressMessage("ReSharper", "ArgumentsStyleLiteral")]
-    public class SimpleServiceStateMachineTests
+    public class PausableServiceStateMachineTests
     {
         private static readonly string[] TestStartupArguments = new string[] { "Arg1", "Arg2" };
 
         private readonly ServiceStatusReportCallback statusReportCallback = A.Fake<ServiceStatusReportCallback>();
-        private readonly IWin32Service serviceImplmentation = A.Fake<IWin32Service>();
+        private readonly IPausableWin32Service serviceImplmentation = A.Fake<IPausableWin32Service>();
 
         // subject under test
         private readonly IWin32ServiceStateMachine sut;
 
         private ServiceStoppedCallback serviceStoppedCallbackPassedToImplementation;
 
-        public SimpleServiceStateMachineTests()
+        public PausableServiceStateMachineTests()
         {
-            sut = new SimpleServiceStateMachine(serviceImplmentation);
+            sut = new PausableServiceStateMachine(serviceImplmentation);
         }
 
         [Fact]
@@ -92,6 +92,34 @@ namespace DasMulli.Win32.ServiceUtils.Tests
                 .MustHaveHappened();
         }
 
+        [Fact]
+        public void ItShallPauseImplementationAndReportPaused()
+        {
+            // Given
+            GivenTheServiceHasBeenStarted();
+
+            // When
+            sut.OnCommand(ServiceControlCommand.Pause, 0);
+
+            // Then
+            A.CallTo(() => serviceImplmentation.Pause()).MustHaveHappened();
+            A.CallTo(() => statusReportCallback(ServiceState.Paused, ServiceAcceptedControlCommandsFlags.PauseContinueStop, 0, 0)).MustHaveHappened();
+        }
+
+        [Fact]
+        public void ItShallContinueImplementationAndReportStarted()
+        {
+            // Given
+            GivenTheServiceHasBeenStarted();
+
+            // When
+            sut.OnCommand(ServiceControlCommand.Continue, 0);
+
+            // Then
+            A.CallTo(() => serviceImplmentation.Continue()).MustHaveHappened();
+            A.CallTo(() => statusReportCallback(ServiceState.Running, ServiceAcceptedControlCommandsFlags.PauseContinueStop, 0, 0)).MustHaveHappened();
+        }
+
         [Theory, MemberData(nameof(UnsupportedCommandExamples))]
         public void ItShallIgnoreUnsupportedCommands(ServiceControlCommand unsupportedCommand)
         {
@@ -125,8 +153,6 @@ namespace DasMulli.Win32.ServiceUtils.Tests
         {
             get
             {
-                yield return new object[] { ServiceControlCommand.Pause };
-                yield return new object[] { ServiceControlCommand.Continue };
                 yield return new object[] { ServiceControlCommand.Shutdown };
                 yield return new object[] { ServiceControlCommand.PowerEvent };
             }
