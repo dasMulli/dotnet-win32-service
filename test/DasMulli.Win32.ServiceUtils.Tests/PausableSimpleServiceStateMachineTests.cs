@@ -32,7 +32,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests
 
             // Then
             A.CallTo(() => serviceImplmentation.Start(TestStartupArguments, A<ServiceStoppedCallback>._)).MustHaveHappened();
-            A.CallTo(() => statusReportCallback(ServiceState.Running, ServiceAcceptedControlCommandsFlags.Stop, 0, 0)).MustHaveHappened();
+            A.CallTo(() => statusReportCallback(ServiceState.Running, ServiceAcceptedControlCommandsFlags.PauseContinueStop, 0, 0)).MustHaveHappened();
         }
 
         [Fact]
