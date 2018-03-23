@@ -55,6 +55,29 @@ namespace DasMulli.Win32.ServiceUtils
         }
 
         /// <summary>
+        /// Initializes a new <see cref="IPausableWin32Service"/> to run the specified windows service implementation.
+        /// </summary>
+        /// <param name="service">The windows service implementation about to be run.</param>
+        public Win32ServiceHost([NotNull] IPausableWin32Service service): this(service, Win32Interop.Wrapper)
+        {
+        }
+
+        internal Win32ServiceHost([NotNull] IPausableWin32Service service, [NotNull] INativeInterop nativeInterop)
+        {
+            if (service == null)
+            {
+                throw new ArgumentNullException(nameof(service));
+            }
+
+            this.nativeInterop = nativeInterop ?? throw new ArgumentNullException(nameof(nativeInterop));
+            serviceName = service.ServiceName;
+            stateMachine = new PausableServiceStateMachine(service);
+
+            serviceMainFunctionDelegate = ServiceMainFunction;
+            serviceControlHandlerDelegate = HandleServiceControlCommand;
+        }
+
+        /// <summary>
         /// Initializes a new <see cref="Win32ServiceHost"/> class to run an advanced service with custom state handling.
         /// </summary>
         /// <param name="serviceName">Name of the windows service.</param>
