@@ -69,16 +69,6 @@ class MyService : IWin32Service
     {
         // shut it down again
     }
-
-    public void Pause()
-    {
-        // pause it!
-    }
-
-    public void Continue()
-    {
-        // resume it!
-    }
 }
 ```
 
@@ -102,6 +92,11 @@ Also take a look at the [ASP.NET Core MVC sample](./samples/MvcTestService), whi
 When running it in development and not from the published output, be sure to pass `--preserve-working-directory` to it when registering
 so that it will run from the project directory (e.g. run `dotnet run --register-service --preserve-working-directory` from and administrative
 command prompt).
+
+## Pause & Continue support
+
+To create a service that supports being paused and later continued or stopped, implement `IPausableWin32Service` which extends `IWin32Service` by `Pause()` and `Continue()` methods
+you can use to implement your pause&continue logic.
 
 ## Limitations
 

@@ -21,14 +21,14 @@ namespace DasMulli.Win32.ServiceUtils
         Stop = 0x00000001,
 
         /// <summary>
-        /// The service can be continued from the paused state
+        /// The service can be paused when running or continued when currently paused.
         /// </summary>
         PauseContinue = 0x00000002,
 
         /// <summary>
-        /// The service can be stopped or continued from the paused state, and can be stopped or paused from a running state
+        /// The service can be stopped or paused when running or continued when currently paused.
         /// </summary>
-        PauseContinueStop = PauseContinue + Stop,
+        PauseContinueStop = PauseContinue | Stop,
 
         /// <summary>
         /// The shutdown command is accepted which notfies the service about a system shutdown.

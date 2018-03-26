@@ -68,9 +68,5 @@ namespace TestService
             stopRequestedByWindows = true;
             webHost.Dispose();
         }
-
-        public void Pause() { }
-
-        public void Continue() { }
     }
 }
