@@ -12,8 +12,8 @@
     It should be false for every other case.
     Change if needed between releases
     -->
-    <BuildAspNetExtensionsOutOfBand>true</BuildAspNetExtensionsOutOfBand>
-    <AspNetExtensionsServiceUtilsReferenceVersion>1.1.0</AspNetExtensionsServiceUtilsReferenceVersion>
+    <BuildAspNetExtensionsOutOfBand>false</BuildAspNetExtensionsOutOfBand>
+    <AspNetExtensionsServiceUtilsReferenceVersion>1.2.0</AspNetExtensionsServiceUtilsReferenceVersion>
   </PropertyGroup>
 
   <!-- NuGet related properties -->
