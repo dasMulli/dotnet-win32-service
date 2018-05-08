@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -49,6 +48,29 @@ namespace DasMulli.Win32.ServiceUtils
             this.nativeInterop = nativeInterop ?? throw new ArgumentNullException(nameof(nativeInterop));
             serviceName = service.ServiceName;
             stateMachine = new SimpleServiceStateMachine(service);
+
+            serviceMainFunctionDelegate = ServiceMainFunction;
+            serviceControlHandlerDelegate = HandleServiceControlCommand;
+        }
+
+        /// <summary>
+        /// Initializes a new <see cref="IPausableWin32Service"/> to run the specified windows service implementation.
+        /// </summary>
+        /// <param name="service">The windows service implementation about to be run.</param>
+        public Win32ServiceHost([NotNull] IPausableWin32Service service): this(service, Win32Interop.Wrapper)
+        {
+        }
+
+        internal Win32ServiceHost([NotNull] IPausableWin32Service service, [NotNull] INativeInterop nativeInterop)
+        {
+            if (service == null)
+            {
+                throw new ArgumentNullException(nameof(service));
+            }
+
+            this.nativeInterop = nativeInterop ?? throw new ArgumentNullException(nameof(nativeInterop));
+            serviceName = service.ServiceName;
+            stateMachine = new PausableServiceStateMachine(service);
 
             serviceMainFunctionDelegate = ServiceMainFunction;
             serviceControlHandlerDelegate = HandleServiceControlCommand;

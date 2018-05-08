@@ -93,12 +93,17 @@ When running it in development and not from the published output, be sure to pas
 so that it will run from the project directory (e.g. run `dotnet run --register-service --preserve-working-directory` from and administrative
 command prompt).
 
+## Pause & Continue support
+
+To create a service that supports being paused and later continued or stopped, implement `IPausableWin32Service` which extends `IWin32Service` by `Pause()` and `Continue()` methods
+you can use to implement your pause&continue logic.
+
 ## Limitations
 
 * No custom exceptions / error codes. Everything will throw a `Win32Exception` if something goes wrong (It's message should be
   interpretable on windows).
 * All exceptions thrown by the service implementation will cause the service host
   to report exit code -1 / 0xffffffff to the service control manager.
-* Currently, no direct support for services supporting pause and continue commands as well as other commands (power event, system shutdown)
+* Currently, no direct support for services supporting commands such as power event and system shutdown
   * However, consumers can now use `IWin32ServiceStateMachine` to implement custom behavior.
     Copy `SimpleServiceStateMachine` as a starting point to implement extended services.
