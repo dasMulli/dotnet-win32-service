@@ -49,6 +49,8 @@ namespace DasMulli.Win32.ServiceUtils
 
         bool StartServiceW(ServiceHandle service, uint argc, IntPtr wargv);
 
+        bool StopService(ServiceHandle service);
+
         bool DeleteService(ServiceHandle service);
 
         bool ChangeServiceConfig2W(ServiceHandle service, ServiceConfigInfoTypeLevel infoTypeLevel, IntPtr info);

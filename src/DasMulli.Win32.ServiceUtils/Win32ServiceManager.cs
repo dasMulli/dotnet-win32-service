@@ -212,6 +212,7 @@ namespace DasMulli.Win32.ServiceUtils
                 {
                     using (var svc = mgr.OpenService(serviceName, ServiceControlAccessRights.All))
                     {
+                        svc.Stop(); // stop before deleting to prevent staying in "disabled" state
                         svc.Delete();
                     }
                 }

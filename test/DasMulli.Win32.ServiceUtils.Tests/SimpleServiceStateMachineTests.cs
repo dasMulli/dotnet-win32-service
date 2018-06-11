@@ -12,7 +12,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests
         private static readonly string[] TestStartupArguments = new string[] { "Arg1", "Arg2" };
 
         private readonly ServiceStatusReportCallback statusReportCallback = A.Fake<ServiceStatusReportCallback>();
-        private readonly IWin32Service serviceImplmentation = A.Fake<IWin32Service>();
+        private readonly IWin32Service serviceImplementation = A.Fake<IWin32Service>();
 
         // subject under test
         private readonly IWin32ServiceStateMachine sut;
@@ -21,7 +21,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests
 
         public SimpleServiceStateMachineTests()
         {
-            sut = new SimpleServiceStateMachine(serviceImplmentation);
+            sut = new SimpleServiceStateMachine(serviceImplementation);
         }
 
         [Fact]
@@ -31,7 +31,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests
             sut.OnStart(TestStartupArguments, statusReportCallback);
 
             // Then
-            A.CallTo(() => serviceImplmentation.Start(TestStartupArguments, A<ServiceStoppedCallback>._)).MustHaveHappened();
+            A.CallTo(() => serviceImplementation.Start(TestStartupArguments, A<ServiceStoppedCallback>._)).MustHaveHappened();
             A.CallTo(() => statusReportCallback(ServiceState.Running, ServiceAcceptedControlCommandsFlags.Stop, 0, 0)).MustHaveHappened();
         }
 
@@ -45,7 +45,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests
             sut.OnCommand(ServiceControlCommand.Stop, 0);
 
             // Then
-            A.CallTo(() => serviceImplmentation.Stop()).MustHaveHappened();
+            A.CallTo(() => serviceImplementation.Stop()).MustHaveHappened();
             A.CallTo(() => statusReportCallback(ServiceState.Stopped, ServiceAcceptedControlCommandsFlags.None, 0, 0)).MustHaveHappened();
         }
 
@@ -53,7 +53,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests
         public void ItShallReportStoppedImplmentationThrowsOnStartup()
         {
             // Given
-            A.CallTo(serviceImplmentation).Throws<Exception>();
+            A.CallTo(serviceImplementation).Throws<Exception>();
 
             // When
             sut.OnStart(TestStartupArguments, statusReportCallback);
@@ -68,7 +68,7 @@ namespace DasMulli.Win32.ServiceUtils.Tests
         {
             // Given
             GivenTheServiceHasBeenStarted();
-            A.CallTo(serviceImplmentation).Throws<Exception>();
+            A.CallTo(serviceImplementation).Throws<Exception>();
 
             // When
             sut.OnCommand(ServiceControlCommand.Stop, 0);
@@ -103,12 +103,12 @@ namespace DasMulli.Win32.ServiceUtils.Tests
 
             // Then no other calls than the startup calls must have been made
             A.CallTo(statusReportCallback).MustHaveHappened(Repeated.NoMoreThan.Once);
-            A.CallTo(serviceImplmentation).MustHaveHappened(Repeated.NoMoreThan.Once);
+            A.CallTo(serviceImplementation).MustHaveHappened(Repeated.NoMoreThan.Once);
         }
 
         private void GivenTheServiceHasBeenStarted()
         {
-            A.CallTo(() => serviceImplmentation.Start(null, null))
+            A.CallTo(() => serviceImplementation.Start(null, null))
                 .WithAnyArguments()
                 .Invokes((string[] args, ServiceStoppedCallback stoppedCallback) =>
                 {

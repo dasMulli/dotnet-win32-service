@@ -80,6 +80,9 @@ namespace DasMulli.Win32.ServiceUtils
         private static extern bool StartServiceW(ServiceHandle service, uint argc, IntPtr wargv);
 
         [DllImport(DllServiceManagement_L1_1_0, ExactSpelling = true, SetLastError = true)]
+        private static extern bool ControlService(ServiceHandle service, uint argc, ref ServiceStatus serviceStatus);
+
+        [DllImport(DllServiceManagement_L1_1_0, ExactSpelling = true, SetLastError = true)]
         private static extern bool DeleteService(ServiceHandle service);
 
         [DllImport(DllServiceManagement_L2_1_0, ExactSpelling = true, SetLastError = true, CharSet = CharSet.Unicode)]
@@ -134,6 +137,13 @@ namespace DasMulli.Win32.ServiceUtils
             bool INativeInterop.StartServiceW(ServiceHandle service, uint argc, IntPtr wargv)
             {
                 return StartServiceW(service, argc, wargv);
+            }
+
+            bool INativeInterop.StopService(ServiceHandle service)
+            {
+                const int SERVICE_CONTROL_STOP = 0x00000001;
+                var serviceStatus = new ServiceStatus();
+                return ControlService(service, SERVICE_CONTROL_STOP, ref serviceStatus);
             }
 
             bool INativeInterop.DeleteService(ServiceHandle service)
