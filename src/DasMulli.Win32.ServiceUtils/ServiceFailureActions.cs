@@ -6,8 +6,7 @@ namespace DasMulli.Win32.ServiceUtils
     /// <inheritdoc />
     /// <summary>
     /// Represents a set of configurations that specify which actions to take if a service fails.
-    ///
-    /// A managed class that holds data referring to a <see cref="T:DasMulli.Win32.ServiceUtils.ServiceFailureActionsInfo" /> class which has unmanaged resources
+    /// A managed class that holds data referring to a <see cref="ServiceFailureActionsInfo" /> class which has unmanaged resources.
     /// </summary>
     public class ServiceFailureActions : IEquatable<ServiceFailureActions>
     {
@@ -63,12 +62,9 @@ namespace DasMulli.Win32.ServiceUtils
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
+        /// Determines whether the specified <see cref="object"/> is equal to this instance.
         /// </summary>
-        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
-        /// </returns>
+        /// <param name="obj">The <see cref="object"/> to compare with this instance.</param>
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;

@@ -34,7 +34,7 @@ The "Services" administrative tool should show the service:
 ...
 Successfully unregistered service "Demo .NET Core Service" ("Demo ASP.NET Core Service running on .NET Core")
 ```
-Note that the service may show up as `disabled` for some time until all tools accessing the Windows services APIs have been closed.
+The service may show up as `disabled` for some time until all tools accessing the Windows services APIs have been closed.
 See this [Stack Overflow question](http://stackoverflow.com/questions/20561990/how-to-solve-the-specified-service-has-been-marked-for-deletion-error).
 
 ## API
@@ -78,7 +78,7 @@ You can then register your service via sc.exe (run cmd / powershell as administr
 
 Now go to Services or Task Manager and start your service.
 
-Note that `sc` will install your service as `SYSTEM` user which has way to many access rights to run things like web apps.
+`sc` will install your service as `SYSTEM` user which has way to many access rights to run things like web apps.
 See [its reference](https://technet.microsoft.com/en-us/library/cc990289(v=ws.11).aspx) for more options.
 
 If you want to get rid of it again, use:

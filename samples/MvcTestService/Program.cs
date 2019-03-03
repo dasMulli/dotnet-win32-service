@@ -110,7 +110,7 @@ namespace MvcTestService
             var fullServiceCommand = host + " " + string.Join(" ", serviceArgs);
 
             // Do not use LocalSystem in production.. but this is good for demos as LocalSystem will have access to some random git-clone path
-            // Note that when the service is already registered and running, it will be reconfigured but not restarted
+            // When the service is already registered and running, it will be reconfigured but not restarted
             var serviceDefinition = new ServiceDefinitionBuilder(ServiceName)
                 .WithDisplayName(ServiceDisplayName)
                 .WithDescription(ServiceDescription)

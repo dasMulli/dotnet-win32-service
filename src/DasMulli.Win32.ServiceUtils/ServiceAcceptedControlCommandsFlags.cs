@@ -16,7 +16,7 @@ namespace DasMulli.Win32.ServiceUtils
         None = 0,
 
         /// <summary>
-        /// The service can be stopped
+        /// The service can be stopped.
         /// </summary>
         Stop = 0x00000001,
 

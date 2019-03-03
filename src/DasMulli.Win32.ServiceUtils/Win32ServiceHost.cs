@@ -79,7 +79,7 @@ namespace DasMulli.Win32.ServiceUtils
         /// <summary>
         /// Initializes a new <see cref="Win32ServiceHost"/> class to run an advanced service with custom state handling.
         /// </summary>
-        /// <param name="serviceName">Name of the Windows service.</param>
+        /// <param name="serviceName">The name of the Windows service.</param>
         /// <param name="stateMachine">The custom service state machine implementation to use.</param>
         public Win32ServiceHost([NotNull] string serviceName, [NotNull] IWin32ServiceStateMachine stateMachine)
             : this(serviceName, stateMachine, Win32Interop.Wrapper)
@@ -97,10 +97,8 @@ namespace DasMulli.Win32.ServiceUtils
         }
 
         /// <summary>
-        /// Obsolete - pretends to run asynchronously.
-        /// Only exists for compatibility with 1.0 API
+        /// Obsolete - pretends to run asynchronously. Only exists for compatibility with 1.0 API.
         /// </summary>
-        /// <returns></returns>
         [Obsolete("Doesn't really work when used in an async continuation on a background thread due to Windows API requirements. Use Run() from the main thread instead (blocking).")]
         [EditorBrowsable(EditorBrowsableState.Never)]
 #if NETSTANDARD2_0
@@ -112,7 +110,6 @@ namespace DasMulli.Win32.ServiceUtils
         /// Runs the Windows service that this instance was initialized with.
         /// This method is intended to be run from the application's main thread and will block until the service has stopped.
         /// </summary>
-        /// <returns></returns>
         /// <exception cref="Win32Exception">Thrown when an exception occurs when communicating with Windows' service system.</exception>
         /// <exception cref="PlatformNotSupportedException">Thrown when run on a non-Windows platform.</exception>
         public int Run()
