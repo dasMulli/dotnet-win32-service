@@ -54,7 +54,7 @@ namespace MvcTestService
             }
             catch (Exception ex)
             {
-                WriteLine($"An error ocurred: {ex.Message}");
+                WriteLine($"An error occurred: {ex.Message}");
             }
         }
 
@@ -73,7 +73,7 @@ namespace MvcTestService
             {
                 Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location));
             }
-            
+
             BuildWebHost(args).RunAsService(ServiceName);
         }
 
@@ -110,7 +110,7 @@ namespace MvcTestService
             var fullServiceCommand = host + " " + string.Join(" ", serviceArgs);
 
             // Do not use LocalSystem in production.. but this is good for demos as LocalSystem will have access to some random git-clone path
-            // Note that when the service is already registered and running, it will be reconfigured but not restarted
+            // When the service is already registered and running, it will be reconfigured but not restarted
             var serviceDefinition = new ServiceDefinitionBuilder(ServiceName)
                 .WithDisplayName(ServiceDisplayName)
                 .WithDescription(ServiceDescription)
@@ -136,18 +136,18 @@ namespace MvcTestService
         {
             WriteLine(ServiceDescription);
             WriteLine();
-            WriteLine("This demo application is intened to be run as windows service. Use one of the following options:");
+            WriteLine("This demo application is intended to be run as Windows service. Use one of the following options:");
             WriteLine();
-            WriteLine("  --register-service            Registers and starts this program as a windows service named \"" + ServiceDisplayName + "\"");
+            WriteLine("  --register-service            Registers and starts this program as a Windows service named \"" + ServiceDisplayName + "\"");
             WriteLine("                                All additional arguments will be passed to ASP.NET Core's WebHostBuilder.");
             WriteLine();
             WriteLine("  --preserve-working-directory  Saves the current working directory to the service configuration.");
-            WriteLine("                                Set this wenn running via 'dotnet run' or when the application content");
-            WriteLine("                                is not located nex to the application.");
+            WriteLine("                                Set this when running via 'dotnet run' or when the application content");
+            WriteLine("                                is not located next to the application.");
             WriteLine();
-            WriteLine("  --unregister-service          Removes the windows service creatd by --register-service.");
+            WriteLine("  --unregister-service          Removes the Windows service created by --register-service.");
             WriteLine();
-            WriteLine("  --interactive                 Runs the underlying asp.net core app. Useful to test arguments.");
+            WriteLine("  --interactive                 Runs the underlying ASP.NET Core app. Useful to test arguments.");
         }
 
         private static string EscapeCommandLineArgument(string arg)
@@ -160,10 +160,10 @@ namespace MvcTestService
 
         public static IWebHost BuildWebHost(string[] args)
         {
-            /* 
+            /*
              * create an override configuration based on the command line args
              * to work around ASP.NET Core issue https://github.com/aspnet/MetaPackages/issues/221
-             * wich should be fixed in 2.1.0.
+             * which should be fixed in 2.1.0.
              */
             var configuration = new ConfigurationBuilder().AddCommandLine(args).Build();
 

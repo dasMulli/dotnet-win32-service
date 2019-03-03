@@ -3,7 +3,7 @@
 namespace DasMulli.Win32.ServiceUtils
 {
     /// <summary>
-    /// Contains settings for a windows service registration.
+    /// Contains settings for a Windows service registration.
     /// </summary>
     [PublicAPI]
     public class ServiceDefinition
@@ -37,7 +37,7 @@ namespace DasMulli.Win32.ServiceUtils
         /// This includes the path to the executable as well as the
         /// arguments to be passed to it.
         /// </summary>
-        /// <value> 
+        /// <value>
         /// The binary path of the service.
         /// This includes the path to the executable as well as the
         /// arguments to be passed to it.
@@ -63,13 +63,13 @@ namespace DasMulli.Win32.ServiceUtils
         /// <summary>
         /// Gets or sets a value indicating whether the failure actions will be triggered
         /// even if the service reports stopped but with a non-zero exit code.
-        /// If false, the failure actions will only be triggered if the service terminates
+        /// If <see langword="false"/>, the failure actions will only be triggered if the service terminates
         /// without reporting the stopped state (=> considered a crash).
         /// </summary>
         /// <value>
-        /// When <c>true</c>, the configured failure actions will be triggered
+        /// When <see langword="true"/>, the configured failure actions will be triggered
         /// even if the service reports stopped but with a non-zero exit code.
-        /// If <c>fasle</c>, the failure actions will only be triggered if the service terminates
+        /// If <see langword="false"/>, the failure actions will only be triggered if the service terminates
         /// without reporting the stopped state (=> considered a crash).
         /// </value>
         public bool FailureActionsOnNonCrashFailures { get; set; }
@@ -77,9 +77,6 @@ namespace DasMulli.Win32.ServiceUtils
         /// <summary>
         /// Gets or sets a value indicating whether the service shall be started automatically during system startup.
         /// </summary>
-        /// <value>
-        ///   <c>true</c> if the service shall be started automatically during system startup; otherwise, <c>false</c>.
-        /// </value>
         public bool AutoStart { get; set; } = true;
 
         /// <summary>
@@ -94,10 +91,6 @@ namespace DasMulli.Win32.ServiceUtils
         /// Gets or sets a value indicating whether the service shall started delayed when started
         /// automatically on startup.
         /// </summary>
-        /// <value>
-        ///   <c>true</c> if the service shall started delayed when started
-        /// automatically on startup; otherwise, <c>false</c>.
-        /// </value>
         public bool DelayedAutoStart { get; set; }
 
         /// <summary>

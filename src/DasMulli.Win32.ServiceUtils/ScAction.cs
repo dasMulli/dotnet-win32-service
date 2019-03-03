@@ -8,7 +8,7 @@ namespace DasMulli.Win32.ServiceUtils
     /// <summary>
     /// Service control actions used to specify what to do in case of service failures.
     /// </summary>
-    /// <seealso cref="System.IEquatable{ScAction}" />
+    /// <seealso cref="System.IEquatable{T}" />
     [StructLayout(LayoutKind.Sequential)]
     [SuppressMessage("ReSharper", "ConvertToAutoProperty", Justification = "Keep fields to preserve explicit struct layout for marshalling.")]
     [PublicAPI]
@@ -45,21 +45,15 @@ namespace DasMulli.Win32.ServiceUtils
         /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
-        /// <returns>
-        /// true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise, false.
-        /// </returns>
         public bool Equals(ScAction other)
         {
             return _Type == other._Type && _Delay == other._Delay;
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
+        /// Determines whether the specified <see cref="object"/> is equal to this instance.
         /// </summary>
-        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
-        /// </returns>
+        /// <param name="obj">The <see cref="object"/> to compare with this instance.</param>
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -70,7 +64,7 @@ namespace DasMulli.Win32.ServiceUtils
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>
-        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         /// </returns>
         public override int GetHashCode()
         {

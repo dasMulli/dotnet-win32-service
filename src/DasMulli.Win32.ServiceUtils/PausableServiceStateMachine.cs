@@ -4,10 +4,10 @@ using System.Diagnostics.CodeAnalysis;
 namespace DasMulli.Win32.ServiceUtils
 {
     /// <summary>
-    /// Implemets the state machine to handle a simple service that only implement starting and stopping.
-    /// These simple services are implemented by configruming to the <see cref="IWin32Service"/> protocol.
+    /// Implements the state machine to handle a simple service that only implement starting and stopping.
+    /// These simple services are implemented by configuring to the <see cref="IWin32Service"/> protocol.
     /// </summary>
-    /// <seealso cref="DasMulli.Win32.ServiceUtils.IWin32ServiceStateMachine" />
+    /// <seealso cref="IWin32ServiceStateMachine" />
     public sealed class PausableServiceStateMachine : IWin32ServiceStateMachine
     {
         private readonly IPausableWin32Service serviceImplementation;
@@ -23,12 +23,13 @@ namespace DasMulli.Win32.ServiceUtils
         }
 
         /// <summary>
-        /// Called when the service is started.
-        /// Use the provided <paramref name="statusReportCallback" /> to notify the service manager about
+        /// Called by the service host to start the service. When called by <see cref="Win32ServiceHost"/>,
+        /// the service startup arguments received from Windows are specified.
+        /// Use the provided <see cref="ServiceStatusReportCallback"/> to notify the service manager about
         /// state changes such as started, paused etc.
         /// </summary>
-        /// <param name="startupArguments">The startup arguments passed via windows' service configuration.</param>
-        /// <param name="statusReportCallback">The status report callback.</param>
+        /// <param name="startupArguments">The startup arguments.</param>
+        /// <param name="statusReportCallback">Notifies the service manager of a status change.</param>
         [SuppressMessage("ReSharper", "ParameterHidesMember")]
         public void OnStart(string[] startupArguments, ServiceStatusReportCallback statusReportCallback)
         {
@@ -47,10 +48,13 @@ namespace DasMulli.Win32.ServiceUtils
         }
 
         /// <summary>
-        /// Called when a command was received from windows' service system.
+        /// Called by the service host to start the service. When called by <see cref="Win32ServiceHost"/>,
+        /// the service startup arguments received from Windows are specified.
+        /// Use the provided <see cref="ServiceStatusReportCallback"/> to notify the service manager about
+        /// state changes such as started, paused etc.
         /// </summary>
-        /// <param name="command">The received command.</param>
-        /// <param name="commandSpecificEventType">Type of the command specific event. See description of dwEventType at https://msdn.microsoft.com/en-us/library/windows/desktop/ms685996(v=vs.85).aspx </param>
+        /// <param name="startupArguments">The startup arguments.</param>
+        /// <param name="statusReportCallback">Notifies the service manager of a status change.</param>
         public void OnCommand(ServiceControlCommand command, uint commandSpecificEventType)
         {
             switch (command)

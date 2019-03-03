@@ -16,7 +16,7 @@ namespace DasMulli.Win32.ServiceUtils
         None = 0,
 
         /// <summary>
-        /// The service can be stopped
+        /// The service can be stopped.
         /// </summary>
         Stop = 0x00000001,
 
@@ -31,7 +31,7 @@ namespace DasMulli.Win32.ServiceUtils
         PauseContinueStop = PauseContinue | Stop,
 
         /// <summary>
-        /// The shutdown command is accepted which notfies the service about a system shutdown.
+        /// The shutdown command is accepted which notifies the service about a system shutdown.
         /// This event can only be sent by the system.
         /// </summary>
         Shutdown = 0x00000004,
@@ -42,12 +42,12 @@ namespace DasMulli.Win32.ServiceUtils
         ParamChange = 0x00000008,
 
         /// <summary>
-        /// Tndicates that the service is a network service that can re-read its binding parameters without needing to be restarted.
+        /// Indicates that the service is a network service that can re-read its binding parameters without needing to be restarted.
         /// </summary>
         NetBindChange = 0x00000010,
 
         /// <summary>
-        /// Indicates that the service can perform pre-sutdown tasks.
+        /// Indicates that the service can perform pre-shutdown tasks.
         /// This event can only be sent by the system.
         /// </summary>
         PreShutdown = 0x00000100,
@@ -59,7 +59,7 @@ namespace DasMulli.Win32.ServiceUtils
         HardwareProfileChange = 0x00000020,
 
         /// <summary>
-        /// The service can react to power status cahnges.
+        /// The service can react to power status changes.
         /// This event can only be sent by the system.
         /// </summary>
         PowerEvent = 0x00000040,

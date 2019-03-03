@@ -44,7 +44,7 @@ namespace TestService
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"An error ocurred: {ex.Message}");
+                Console.WriteLine($"An error occurred: {ex.Message}");
             }
         }
 
@@ -83,7 +83,7 @@ namespace TestService
             var fullServiceCommand = host + " " + string.Join(" ", remainingArgs);
 
             // Do not use LocalSystem in production.. but this is good for demos as LocalSystem will have access to some random git-clone path
-            // Note that when the service is already registered and running, it will be reconfigured but not restarted
+            // When the service is already registered and running, it will be reconfigured but not restarted
             var serviceDefinition = new ServiceDefinitionBuilder(ServiceName)
                 .WithDisplayName(ServiceDisplayName)
                 .WithDescription(ServiceDescription)
@@ -109,11 +109,11 @@ namespace TestService
         {
             Console.WriteLine(ServiceDescription);
             Console.WriteLine();
-            Console.WriteLine("This demo application is intened to be run as windows service. Use one of the following options:");
-            Console.WriteLine("  --register-service        Registers and starts this program as a windows service named \"" + ServiceDisplayName + "\"");
+            Console.WriteLine("This demo application is intended to be run as Windows service. Use one of the following options:");
+            Console.WriteLine("  --register-service        Registers and starts this program as a Windows service named \"" + ServiceDisplayName + "\"");
             Console.WriteLine("                            All additional arguments will be passed to ASP.NET Core's WebHostBuilder.");
-            Console.WriteLine("  --unregister-service      Removes the windows service creatd by --register-service.");
-            Console.WriteLine("  --interactive             Runs the underlying asp.net core app. Useful to test arguments.");
+            Console.WriteLine("  --unregister-service      Removes the Windows service created by --register-service.");
+            Console.WriteLine("  --interactive             Runs the underlying ASP.NET Core app. Useful to test arguments.");
         }
 
         private static string EscapeCommandLineArgument(string arg)
