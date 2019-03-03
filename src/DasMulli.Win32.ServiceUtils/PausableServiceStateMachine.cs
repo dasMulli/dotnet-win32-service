@@ -4,8 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace DasMulli.Win32.ServiceUtils
 {
     /// <summary>
-    /// Implemets the state machine to handle a simple service that only implement starting and stopping.
-    /// These simple services are implemented by configruming to the <see cref="IWin32Service"/> protocol.
+    /// Implements the state machine to handle a simple service that only implement starting and stopping.
+    /// These simple services are implemented by configuring to the <see cref="IWin32Service"/> protocol.
     /// </summary>
     /// <seealso cref="DasMulli.Win32.ServiceUtils.IWin32ServiceStateMachine" />
     public sealed class PausableServiceStateMachine : IWin32ServiceStateMachine
@@ -27,7 +27,7 @@ namespace DasMulli.Win32.ServiceUtils
         /// Use the provided <paramref name="statusReportCallback" /> to notify the service manager about
         /// state changes such as started, paused etc.
         /// </summary>
-        /// <param name="startupArguments">The startup arguments passed via windows' service configuration.</param>
+        /// <param name="startupArguments">The startup arguments passed via Windows' service configuration.</param>
         /// <param name="statusReportCallback">The status report callback.</param>
         [SuppressMessage("ReSharper", "ParameterHidesMember")]
         public void OnStart(string[] startupArguments, ServiceStatusReportCallback statusReportCallback)
@@ -47,7 +47,7 @@ namespace DasMulli.Win32.ServiceUtils
         }
 
         /// <summary>
-        /// Called when a command was received from windows' service system.
+        /// Called when a command was received from Windows' service system.
         /// </summary>
         /// <param name="command">The received command.</param>
         /// <param name="commandSpecificEventType">Type of the command specific event. See description of dwEventType at https://msdn.microsoft.com/en-us/library/windows/desktop/ms685996(v=vs.85).aspx </param>

@@ -6,7 +6,7 @@ namespace DasMulli.Win32.ServiceUtils
     /// <inheritdoc />
     /// <summary>
     /// Represents a set of configurations that specify which actions to take if a service fails.
-    /// 
+    ///
     /// A managed class that holds data referring to a <see cref="T:DasMulli.Win32.ServiceUtils.ServiceFailureActionsInfo" /> class which has unmanaged resources
     /// </summary>
     public class ServiceFailureActions : IEquatable<ServiceFailureActions>
@@ -40,10 +40,10 @@ namespace DasMulli.Win32.ServiceUtils
         public string RestartCommand { get; }
 
         /// <summary>
-        /// Gets the collections of configured failure actions for each successive time the service failes.
+        /// Gets the collections of configured failure actions for each successive time the service fails.
         /// </summary>
         /// <value>
-        /// The collections of configured failure actions for each successive time the service failes.
+        /// The collections of configured failure actions for each successive time the service fails.
         /// </value>
         public IReadOnlyCollection<ScAction> Actions { get; }
 
@@ -51,7 +51,7 @@ namespace DasMulli.Win32.ServiceUtils
         /// Initializes a new instance of the <see cref="ServiceFailureActions" /> class.
         /// </summary>
         /// <param name="resetPeriod">The reset period in seconds after which previous failures are cleared.</param>
-        /// <param name="rebootMessage">The reboot message used in case a reboot failure action is contaiend in <paramref name="actions"/>.</param>
+        /// <param name="rebootMessage">The reboot message used in case a reboot failure action is contained in <paramref name="actions"/>.</param>
         /// <param name="restartCommand">The command run in case a "run command" failure action is contained in <paramref name="actions"/>.</param>
         /// <param name="actions">The failure actions.</param>
         public ServiceFailureActions(TimeSpan resetPeriod, string rebootMessage, string restartCommand, IReadOnlyCollection<ScAction> actions)
@@ -80,7 +80,7 @@ namespace DasMulli.Win32.ServiceUtils
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>
-        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         /// </returns>
         public override int GetHashCode()
         {

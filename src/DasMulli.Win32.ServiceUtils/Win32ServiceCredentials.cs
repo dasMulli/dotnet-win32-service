@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 namespace DasMulli.Win32.ServiceUtils
 {
     /// <summary>
-    /// Represents credentials for accounts to run windows services with.
+    /// Represents credentials for accounts to run Windows services with.
     /// </summary>
     /// <seealso cref="System.IEquatable{Win32ServiceCredentials}" />
     [PublicAPI]
@@ -27,7 +27,7 @@ namespace DasMulli.Win32.ServiceUtils
         public string Password { get; }
 
         /// <summary>
-        /// Creaes a new <see cref="Win32ServiceCredentials"/> instance to represent an account under which to run widows services.
+        /// Creates a new <see cref="Win32ServiceCredentials"/> instance to represent an account under which to run widows services.
         /// </summary>
         /// <param name="userName">Name of the user.</param>
         /// <param name="password">The password.</param>
@@ -39,19 +39,19 @@ namespace DasMulli.Win32.ServiceUtils
 
         /// <summary>
         /// The local system account - the service will have full access to the system and machine network credentials.
-        /// Not recommended to use in producton environments. 
+        /// Not recommended to use in production environments.
         /// </summary>
         public static Win32ServiceCredentials LocalSystem = new Win32ServiceCredentials(userName: null, password: null);
 
         /// <summary>
-        /// The local service account - the service will have minimum access to the system and anonymous network credentails.
+        /// The local service account - the service will have minimum access to the system and anonymous network credentials.
         /// Recommended for use in logic-only applications.
         /// Consider using a custom account instead for granular control over file system permissions.
         /// </summary>
         public static Win32ServiceCredentials LocalService = new Win32ServiceCredentials(@"NT AUTHORITY\LocalService", password: null);
 
         /// <summary>
-        /// The local service account - the service will have minimum access to the system and machine network credentails.
+        /// The local service account - the service will have minimum access to the system and machine network credentials.
         /// Recommended for use in logic-only applications that need to authenticate to networks using machine credentials.
         /// Consider using a custom account instead for granular control over file system permissions and network authorization control.
         /// </summary>
@@ -89,7 +89,7 @@ namespace DasMulli.Win32.ServiceUtils
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>
-        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         /// </returns>
         public override int GetHashCode()
         {
@@ -102,8 +102,6 @@ namespace DasMulli.Win32.ServiceUtils
         /// <summary>
         /// Implements the operator ==.
         /// </summary>
-        /// <param name="left">The left handside operand.</param>
-        /// <param name="right">The right handside operand.</param>
         /// <returns>
         /// [true] if the operands are equal.
         /// </returns>
@@ -115,8 +113,6 @@ namespace DasMulli.Win32.ServiceUtils
         /// <summary>
         /// Implements the operator !=.
         /// </summary>
-        /// <param name="left">The left handside operand.</param>
-        /// <param name="right">The right handside operand.</param>
         /// <returns>
         /// [true] if the operands are not equal.
         /// </returns>

@@ -8,7 +8,7 @@ namespace DasMulli.AspNetCore.Hosting.WindowsServices
 {
     /// <inheritdoc />
     /// <summary>
-    /// Provides an implementation of a service that hosts an asp.net core application
+    /// Provides an implementation of a service that hosts an ASP.NET Core application
     /// </summary>
     /// <seealso cref="T:DasMulli.Win32.ServiceUtils.IWin32Service" />
     [PublicAPI]
@@ -21,7 +21,7 @@ namespace DasMulli.AspNetCore.Hosting.WindowsServices
         public string ServiceName { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WebHostService"/> class which hosts the sepcified host as a windows service.
+        /// Initializes a new instance of the <see cref="WebHostService"/> class which hosts the specified host as a Windows service.
         /// </summary>
         /// <param name="host">The host to run as a service.</param>
         /// <param name="serviceName">Name of the service to run. If <c>null</c>, set to the name of the entry assembly</param>

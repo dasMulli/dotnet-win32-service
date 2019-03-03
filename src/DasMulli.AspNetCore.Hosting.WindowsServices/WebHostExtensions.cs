@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 namespace DasMulli.AspNetCore.Hosting.WindowsServices
 {
     /// <summary>
-    /// Extensions to web host builder for windows service hosting scenarios
+    /// Extensions to web host builder for Windows service hosting scenarios
     /// </summary>
     public static class WebHostExtensions
     {

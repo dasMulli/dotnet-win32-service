@@ -7,7 +7,7 @@
     public delegate void ServiceStoppedCallback();
 
     /// <summary>
-    /// Interface to allow implementing simple windows services that can start and stop
+    /// Interface to allow implementing simple Windows services that can start and stop
     /// </summary>
     public interface IWin32Service
     {
@@ -20,7 +20,7 @@
         string ServiceName { get; }
 
         /// <summary>
-        /// Starts the service with the startup arguments received from windows.
+        /// Starts the service with the startup arguments received from Windows.
         /// </summary>
         /// <param name="startupArguments">The startup arguments.</param>
         /// <param name="serviceStoppedCallback">The service stopped callback the service can call if it stopped without being requested to stop.</param>

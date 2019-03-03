@@ -3,7 +3,7 @@
 namespace DasMulli.Win32.ServiceUtils
 {
     /// <summary>
-    /// Contains settings for a windows service registration.
+    /// Contains settings for a Windows service registration.
     /// </summary>
     [PublicAPI]
     public class ServiceDefinition
@@ -37,7 +37,7 @@ namespace DasMulli.Win32.ServiceUtils
         /// This includes the path to the executable as well as the
         /// arguments to be passed to it.
         /// </summary>
-        /// <value> 
+        /// <value>
         /// The binary path of the service.
         /// This includes the path to the executable as well as the
         /// arguments to be passed to it.

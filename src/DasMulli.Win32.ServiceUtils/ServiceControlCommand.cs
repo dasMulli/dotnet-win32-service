@@ -53,13 +53,13 @@ namespace DasMulli.Win32.ServiceUtils
 
         /// <summary>
         /// Notifies a network service that a disabled binding
-        /// has ben enabled and that it should add the new binding.
+        /// has been enabled and that it should add the new binding.
         /// </summary>
         NetBindEnable = 0x00000009,
 
         /// <summary>
         /// Notifies a network service that one of its bindings
-        /// has ben disabled and that it should remove the binding.
+        /// has been disabled and that it should remove the binding.
         /// </summary>
         NetBindDisable = 0x0000000A,
 

@@ -5,7 +5,7 @@ namespace DasMulli.Win32.ServiceUtils
 {
     /// <summary>
     /// Simplifies the work of hashing.
-    /// Taken from https://rehansaeed.com/gethashcode-made-easy/", and modified with Reshaper
+    /// Taken from https://rehansaeed.com/gethashcode-made-easy/ and modified with ReSharper.
     /// </summary>
     internal struct HashCode
     {

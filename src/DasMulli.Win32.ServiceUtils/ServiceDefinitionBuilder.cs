@@ -38,7 +38,7 @@ namespace DasMulli.Win32.ServiceUtils
         /// This includes the path to the executable as well as the
         /// arguments to be passed to it.
         /// </summary>
-        /// <value> 
+        /// <value>
         /// The binary path of the service.
         /// This includes the path to the executable as well as the
         /// arguments to be passed to it.
@@ -60,7 +60,7 @@ namespace DasMulli.Win32.ServiceUtils
         /// The failure actions of the service.
         /// </value>
         public ServiceFailureActions FailureActions { get; set; }
-        
+
         /// <summary>
         /// Gets or sets a value indicating whether the failure actions will be triggered
         /// even if the service reports stopped but with a non-zero exit code.
@@ -160,7 +160,7 @@ namespace DasMulli.Win32.ServiceUtils
         /// </summary>
         /// <returns>New instance of <see cref="ServiceDefinitionBuilder"/></returns>
         /// <exception cref="InvalidOperationException">
-        /// Thown when <see cref="ServiceName"/> or <see cref="BinaryPath"/> are null or empty.
+        /// Thrown when <see cref="ServiceName"/> or <see cref="BinaryPath"/> are null or empty.
         /// </exception>
         public virtual ServiceDefinition Build()
         {
@@ -276,7 +276,7 @@ namespace DasMulli.Win32.ServiceUtils
         }
 
         /// <summary>
-        /// Chagnges the flag indicating whether the service shall be started automatically during system startup.
+        /// Changes the flag indicating whether the service shall be started automatically during system startup.
         /// </summary>
         /// <param name="autoStart">
         ///   <c>true</c> if the service shall be started automatically during system startup; otherwise, <c>false</c>.

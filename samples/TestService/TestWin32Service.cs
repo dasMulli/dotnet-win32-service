@@ -46,7 +46,7 @@ namespace TestService
                 .UseConfiguration(config)
                 .Build();
 
-            // Make sure the windows service is stopped if the
+            // Make sure the Windows service is stopped if the
             // ASP.NET Core stack stops for any reason
             webHost
                 .Services

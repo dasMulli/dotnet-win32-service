@@ -8,7 +8,7 @@ namespace DasMulli.Win32.ServiceUtils
 {
     // This implementation is roughly based on https://msdn.microsoft.com/en-us/library/bb540475(v=vs.85).aspx
     /// <summary>
-    /// Runs windows services as requested by windows' service management.
+    /// Runs Windows services as requested by Windows' service management.
     /// Use this class as a replacement for ServiceBase.Run()
     /// </summary>
     [PublicAPI]
@@ -30,9 +30,9 @@ namespace DasMulli.Win32.ServiceUtils
         private Exception resultException;
 
         /// <summary>
-        /// Initializes a new <see cref="Win32ServiceHost"/> to run the specified windows service implementation.
+        /// Initializes a new <see cref="Win32ServiceHost"/> to run the specified Windows service implementation.
         /// </summary>
-        /// <param name="service">The windows service implementation about to be run.</param>
+        /// <param name="service">The Windows service implementation about to be run.</param>
         public Win32ServiceHost([NotNull] IWin32Service service)
             : this(service, Win32Interop.Wrapper)
         {
@@ -54,9 +54,9 @@ namespace DasMulli.Win32.ServiceUtils
         }
 
         /// <summary>
-        /// Initializes a new <see cref="IPausableWin32Service"/> to run the specified windows service implementation.
+        /// Initializes a new <see cref="IPausableWin32Service"/> to run the specified Windows service implementation.
         /// </summary>
-        /// <param name="service">The windows service implementation about to be run.</param>
+        /// <param name="service">The Windows service implementation about to be run.</param>
         public Win32ServiceHost([NotNull] IPausableWin32Service service): this(service, Win32Interop.Wrapper)
         {
         }
@@ -79,7 +79,7 @@ namespace DasMulli.Win32.ServiceUtils
         /// <summary>
         /// Initializes a new <see cref="Win32ServiceHost"/> class to run an advanced service with custom state handling.
         /// </summary>
-        /// <param name="serviceName">Name of the windows service.</param>
+        /// <param name="serviceName">Name of the Windows service.</param>
         /// <param name="stateMachine">The custom service state machine implementation to use.</param>
         public Win32ServiceHost([NotNull] string serviceName, [NotNull] IWin32ServiceStateMachine stateMachine)
             : this(serviceName, stateMachine, Win32Interop.Wrapper)
@@ -101,7 +101,7 @@ namespace DasMulli.Win32.ServiceUtils
         /// Only exists for compatibility with 1.0 API
         /// </summary>
         /// <returns></returns>
-        [Obsolete("Doesn't really work when used in an async continuation on a background thread due to windows API requirements. Use Run() from the main thread instead (blocking).")]
+        [Obsolete("Doesn't really work when used in an async continuation on a background thread due to Windows API requirements. Use Run() from the main thread instead (blocking).")]
         [EditorBrowsable(EditorBrowsableState.Never)]
 #if NETSTANDARD2_0
         [Browsable(false)]
@@ -109,12 +109,12 @@ namespace DasMulli.Win32.ServiceUtils
         public Task<int> RunAsync() => Task.FromResult(Run());
 
         /// <summary>
-        /// Runs the windows service that this instance was initialized with.
-        /// This method is inteded to be run from the application's main thread and will block until the service has stopped.
+        /// Runs the Windows service that this instance was initialized with.
+        /// This method is intended to be run from the application's main thread and will block until the service has stopped.
         /// </summary>
         /// <returns></returns>
-        /// <exception cref="Win32Exception">Thrown when an exception ocurrs when communicating with windows' service system.</exception>
-        /// <exception cref="PlatformNotSupportedException">Thrown when run on a non-windows platform.</exception>
+        /// <exception cref="Win32Exception">Thrown when an exception occurs when communicating with Windows' service system.</exception>
+        /// <exception cref="PlatformNotSupportedException">Thrown when run on a non-Windows platform.</exception>
         public int Run()
         {
             var serviceTable = new ServiceTableEntry[2]; // second one is null/null to indicate termination
@@ -217,7 +217,7 @@ namespace DasMulli.Win32.ServiceUtils
             {
                 return Array.Empty<string>();
             }
-            // skip first parameter becuase it is the name of the service
+            // skip first parameter because it is the name of the service
             var args = new string[numArgs - 1];
             for (var i = 0; i < numArgs - 1; i++)
             {
