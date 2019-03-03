@@ -62,7 +62,7 @@ namespace DasMulli.Win32.ServiceUtils
         }
 
         /// <summary>
-        /// Creates the service.
+        /// Creates a new Windows service.
         /// </summary>
         /// <param name="serviceDefinition">The service definition.</param>
         /// <param name="startImmediately">If set to <see langword="true"/>, the service will be started immediately after registering.</param>
@@ -124,7 +124,7 @@ namespace DasMulli.Win32.ServiceUtils
         }
 
         /// <summary>
-        /// Creates the or update a Windows service.
+        /// Creates or updates a Windows service.
         /// This does not cause the service to restart.
         /// </summary>
         /// <param name="serviceDefinition">The service definition.</param>
