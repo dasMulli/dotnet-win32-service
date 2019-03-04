@@ -43,6 +43,18 @@ namespace DasMulli.Win32.ServiceUtils
             }
         }
 
+        public virtual void Stop(bool throwIfAlreadyStopped = false)
+        {
+            if (!NativeInterop.StopService(this))
+            {
+                var win32Error = Marshal.GetLastWin32Error();
+                if (win32Error != KnownWin32ErrorCoes.ERROR_SERVICE_NOT_ACTIVE || throwIfAlreadyStopped)
+                {
+                    throw new Win32Exception(win32Error);
+                }
+            }
+        }
+
         public virtual void Delete()
         {
             if (!NativeInterop.DeleteService(this))
