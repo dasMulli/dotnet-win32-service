@@ -142,6 +142,22 @@ namespace DasMulli.Win32.ServiceUtils
             return resultCode;
         }
 
+        /// <summary>
+        ///     Requests additional time for a pending operation.
+        /// </summary>
+        /// <param name="milliseconds">The requested time in milliseconds.</param>
+        /// <exception cref="InvalidOperationException">The service is not in a pending state.</exception>
+        public void RequestAdditionalTime (int milliseconds)
+        {
+            if ((this.serviceStatus.State != ServiceState.StartPending) &&
+                (this.serviceStatus.State != ServiceState.StopPending) &&
+                (this.serviceStatus.State != ServiceState.ContinuePending) &&
+                (this.serviceStatus.State != ServiceState.PausePending))
+                throw new InvalidOperationException ("The service is not in a pending state.");
+
+            ReportServiceStatus(this.serviceStatus.State, this.serviceStatus.AcceptedControlCommands, this.serviceStatus.Win32ExitCode, (uint) milliseconds);
+        }
+
         private void ServiceMainFunction(int numArgs, IntPtr argPtrPtr)
         {
             var startupArguments = ParseArguments(numArgs, argPtrPtr);
